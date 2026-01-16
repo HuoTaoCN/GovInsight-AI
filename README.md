@@ -1,6 +1,6 @@
 <div align="center">
 
-# 热线工单质量智能检测系统(GovInsight-AI)
+# GovInsight-AI 热线工单质量智能检测系统
 
 **Intelligent Quality Inspection System for Government Service Hotline Work Orders**
 
@@ -125,6 +125,7 @@ npm run dev
 *   [x] **V0.1**: 基础评分功能 (Basic Scoring)
 *   [x] **V0.2**: 置信度评估与分级处置 (Confidence & Bucketing)
 *   [x] **V0.3**: UI 重构、条件式修正生成、Mock 演示模式
+    *   *V0.3.1 (Latest)*: Dashboard 布局重构、评分标准 Tooltip、新 Logo 设计。
 *   [ ] **V0.4**: 支持批量上传与 CSV 导出
 *   [ ] **V0.5**: 集成 RAG (检索增强生成) 以支持本地知识库（如政策法规库）的合规性检测
 *   [ ] **V1.0**: 完整的仪表盘 (Dashboard) 与多租户支持

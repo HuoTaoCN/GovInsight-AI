@@ -49,12 +49,12 @@ export const MOCK_CASES: MockCase[] = [
     result: {
       scores: {
         completeness: { score: 35, judgement: "完整", issues: [] },
-        consistency: { score: 30, judgement: "高度一致", issues: [] },
+        consistency: { score: 20, judgement: "高度一致", issues: [] },
         clarity: { score: 20, judgement: "规范", issues: [] },
-        risk_awareness: { score: 15, judgement: "充分", issues: [] }
+        risk_awareness: { score: 25, judgement: "充分", issues: [] }
       },
       total_score: 100,
-      overall_level: "Excellent",
+      overall_level: "优秀",
       confidence: 0.98,
       adjusted_confidence: 0.99,
       confidence_bucket: "High",
@@ -106,19 +106,20 @@ export const MOCK_CASES: MockCase[] = [
           issues: ["遗漏关键细节：盲道被堵", "遗漏关键细节：险些造成盲人受伤"] 
         },
         consistency: { 
-          score: 25, 
+          score: 15, 
           judgement: "部分偏差", 
           issues: ["弱化了问题的严重性（盲道占用属于重点治理项，且涉及安全隐患）"] 
         },
         clarity: { score: 18, judgement: "规范", issues: [] },
-        risk_awareness: { score: 12, judgement: "一般", issues: [] }
+        risk_awareness: { score: 22, judgement: "一般", issues: [] }
       },
       total_score: 80,
-      overall_level: "Qualified",
+      overall_level: "合格",
       confidence: 0.82,
       adjusted_confidence: 0.82,
       confidence_bucket: "Medium",
-      need_human_review: false,
+      need_human_review: true,
+      review_reason: "检测到关键信息缺失，且系统置信度为中等，建议人工介入确认。",
       suggestion: "建议补充记录'盲道被堵'及'存在安全隐患'等关键信息，以便承办部门准确评估优先级。",
       suggested_revision: {
         title: "建设路共享单车乱停放堵塞盲道",
@@ -182,7 +183,7 @@ export const MOCK_CASES: MockCase[] = [
         }
       },
       total_score: 45,
-      overall_level: "Risk",
+      overall_level: "存在风险",
       confidence: 0.65,
       adjusted_confidence: 0.55, // 因历史回访投诉，置信度进一步下调
       confidence_bucket: "Low",
@@ -195,6 +196,75 @@ export const MOCK_CASES: MockCase[] = [
         priority: "Emergency"
       },
       reasoning_trace: "1. **风险识别**：录音中出现'拉横幅'、'找媒体'、'孩子住院'等高危关键词。\n2. **工单对比**：工单仅记录为'有异味'，优先级选为'Normal'，完全未体现上述风险。\n3. **结论**：存在极大的漏报风险，极易引发次生舆情，判定为高风险工单。"
+    }
+  },
+  {
+    id: "case-004",
+    name: "严重歪曲事实 (高置信度/退回重写)",
+    description: "将明确的'投诉'记录为'咨询'，严重歪曲事实，系统判定置信度极高，建议直接退回。",
+    input: {
+      transcript: `
+话务员：您好，12345热线。
+市民：我要投诉！我要投诉！我家楼下的烧烤店每天晚上吵到凌晨三四点，根本没法睡觉！
+话务员：先生您好，请问是哪一家烧烤店？
+市民：就是幸福路的那家“老王烧烤”。我之前打过电话了，根本没人管！你们是不是包庇他们？
+话务员：先生，我们会记录的。您主要是想问一下烧烤店的营业时间规定吗？
+市民：问什么营业时间？我是要投诉他们扰民！噪音扰民！而且油烟也很大！
+话务员：好的，我帮您记录一下，您想咨询关于餐饮业夜间经营的相关政策，以及环保排放标准。
+市民：你有病吧？我说我要投诉！投诉！
+话务员：先生请注意您的言辞。我已经帮您记录了您的咨询诉求，稍后会转给相关部门解答。再见。
+      `,
+      form_data: {
+        title: "关于餐饮业经营政策咨询",
+        description: "市民来电咨询餐饮业夜间经营时间规定及环保排放标准，请求相关部门解答。",
+        citizen_name: "李先生",
+        citizen_phone: "136****5678",
+        priority: "Normal"
+      },
+      metadata: {
+        ticket_id: "20250115-004",
+        category: "政策咨询/市场监管/餐饮服务",
+        timestamp: "2025-01-15 23:15:00",
+        handling_department: "市场监督管理局",
+        status: "Pending"
+      },
+      history_factors: {
+        agent_consistency_score: 0.60,
+        has_callback_complaint: true
+      }
+    },
+    result: {
+      scores: {
+        completeness: { 
+          score: 10, 
+          judgement: "不完整", 
+          issues: ["遗漏核心诉求：噪音扰民投诉", "遗漏核心诉求：油烟污染投诉"] 
+        },
+        consistency: { 
+          score: 0, 
+          judgement: "严重冲突", 
+          issues: ["定性错误：将'投诉'记录为'咨询'", "完全歪曲市民意图，属于严重的推诿塞责"] 
+        },
+        clarity: { score: 20, judgement: "规范", issues: [] },
+        risk_awareness: { 
+          score: 5, 
+          judgement: "不足", 
+          issues: ["忽略市民愤怒情绪", "忽略重复投诉背景"] 
+        }
+      },
+      total_score: 35,
+      overall_level: "不合格",
+      confidence: 0.95,
+      adjusted_confidence: 0.95,
+      confidence_bucket: "High",
+      need_human_review: false,
+      suggestion: "工单内容与录音事实严重不符，将明确的'投诉'定性为'咨询'，属于严重的履职不到位，建议直接退回重写并追究责任。",
+      suggested_revision: {
+        title: "幸福路老王烧烤噪音及油烟扰民投诉",
+        description: "市民来电投诉幸福路“老王烧烤”夜间噪音扰民（持续至凌晨三四点）及油烟污染问题。市民表示此前已投诉无果，情绪激动，要求相关部门尽快查处。",
+        priority: "Urgent"
+      },
+      reasoning_trace: "1. **意图识别**：市民反复强调'我要投诉'、'噪音扰民'，意图极其明确。\n2. **行为分析**：话务员无视市民诉求，强行将其引导并记录为'政策咨询'。\n3. **结论**：工单完全捏造了诉求性质，属于性质恶劣的'指鹿为马'，系统以高置信度判定为不合格。"
     }
   }
 ];

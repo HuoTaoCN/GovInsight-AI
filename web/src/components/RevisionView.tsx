@@ -31,14 +31,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({ isAnalyzed = false, 
 
   if (!isAnalyzed) {
     return (
-      <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50">
-        <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center">
+      <div className="flex-1 min-h-0 bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50 flex flex-col">
+        <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
             <FileText size={18} className="text-blue-700" />
             <h3 className="font-bold text-blue-800">AI 建议修正工单</h3>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center py-8 text-gray-400">
+        <div className="flex-1 flex flex-col items-center justify-center py-8 text-gray-400">
           <div className="bg-gray-50 p-3 rounded-full mb-3">
             <FileText size={24} className="opacity-20" />
           </div>
@@ -50,14 +50,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({ isAnalyzed = false, 
 
   if (!revision || !original) {
     return (
-      <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50">
-        <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center">
+      <div className="flex-1 min-h-0 bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50 flex flex-col">
+        <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
             <FileText size={18} className="text-blue-700" />
             <h3 className="font-bold text-blue-800">AI 建议修正工单</h3>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center py-8 text-green-600 bg-green-50/50">
+        <div className="flex-1 flex flex-col items-center justify-center py-8 text-green-600 bg-green-50/50">
           <div className="bg-green-100 p-3 rounded-full mb-3">
             <CheckCircle size={24} className="text-green-600" />
           </div>
@@ -69,15 +69,15 @@ export const RevisionView: React.FC<RevisionViewProps> = ({ isAnalyzed = false, 
   }
 
   return (
-    <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50">
-      <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center">
+    <div className="flex-1 min-h-0 bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50 flex flex-col">
+      <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center shrink-0">
         <div className="flex items-center gap-2">
           <FileText size={18} className="text-blue-700" />
           <h3 className="font-bold text-blue-800">AI 建议修正工单</h3>
         </div>
       </div>
       
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 flex-1 overflow-y-auto">
         {/* Title Comparison */}
         <div>
           <div className="text-xs font-bold text-gray-500 mb-1 uppercase">工单标题</div>

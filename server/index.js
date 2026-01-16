@@ -36,13 +36,13 @@ Evaluate the work order based on the following 4 dimensions:
 1.  **Completeness (35 points)**
     *   Are core issues or multiple appeals omitted?
     *   Are key details (time, location, object, frequency) missing?
-2.  **Consistency (30 points)**
+2.  **Consistency (20 points)**
     *   Does the work order accurately reflect the citizen's true appeal?
     *   Is there any weakening, deviation, blurring, or qualitative change?
 3.  **Clarity (20 points)**
     *   Is the expression clear, standardized, and unambiguous?
     *   Does it affect subsequent departmental understanding?
-4.  **Risk Awareness (15 points)**
+4.  **Risk Awareness (25 points)**
     *   Is obvious dissatisfaction ignored?
     *   Are repeated, long-term, or potentially escalating issues weakened?
 
@@ -78,27 +78,27 @@ You must output ONLY a valid JSON object. Do not wrap the JSON in markdown code 
   "scores": {
     "completeness": {
       "score": 0,
-      "judgement": "String (Complete/Basic/Incomplete)",
+      "judgement": "String (完整/基本完整/不完整)",
       "issues": ["String"]
     },
     "consistency": {
       "score": 0,
-      "judgement": "String (Consistent/Deviation/Conflict)",
+      "judgement": "String (一致/部分偏差/严重冲突)",
       "issues": ["String"]
     },
     "clarity": {
       "score": 0,
-      "judgement": "String (Clear/Average/Unclear)",
+      "judgement": "String (清晰/一般/模糊)",
       "issues": ["String"]
     },
     "risk_awareness": {
       "score": 0,
-      "judgement": "String (Sufficient/Average/Insufficient)",
+      "judgement": "String (充分/一般/不足)",
       "issues": ["String"]
     }
   },
   "total_score": 0,
-  "overall_level": "String (Excellent/Qualified/Risk/Unqualified)",
+  "overall_level": "String (优秀/合格/存在风险/不合格)",
   "confidence": 0.0,
   "adjusted_confidence": 0.0,
   "confidence_bucket": "String (High/Medium/Low)",

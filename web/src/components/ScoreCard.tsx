@@ -1,38 +1,61 @@
 import React from 'react';
 import type { ScoreDimension } from '../types/quality_inspection';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { Tooltip } from './Tooltip';
+import { CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface ScoreCardProps {
   title: string;
   data: ScoreDimension;
   maxScore: number;
+  description?: string[];
 }
 
-export const ScoreCard: React.FC<ScoreCardProps> = ({ title, data, maxScore }) => {
+export const ScoreCard: React.FC<ScoreCardProps> = ({ title, data, maxScore, description }) => {
   const percentage = (data.score / maxScore) * 100;
   
   return (
-    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
+    <div className="bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm relative">
+      <div className="flex justify-between items-center mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <h3 className="text-xs font-semibold text-gray-700">{title}</h3>
+          {description && description.length > 0 && (
+            <Tooltip
+              content={
+                <div className="w-64">
+                  <div className="font-bold mb-2 text-gray-700 border-b pb-1">评分标准</div>
+                  <ul className="space-y-1.5 text-gray-600">
+                    {description.map((item, index) => (
+                      <li key={index} className="flex items-start gap-1.5 leading-snug">
+                        <span className="text-blue-500 mt-0.5">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              }
+            >
+              <HelpCircle size={12} className="text-blue-400 cursor-help hover:text-blue-600 transition-colors" />
+            </Tooltip>
+          )}
+        </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
             {data.judgement}
           </span>
           <span className={clsx(
-            "text-lg font-bold",
+            "text-sm font-bold",
             percentage >= 90 ? "text-green-600" : percentage >= 60 ? "text-yellow-600" : "text-red-600"
           )}>
-            {data.score} <span className="text-xs text-gray-400">/ {maxScore}</span>
+            {data.score} <span className="text-[10px] text-gray-400">/ {maxScore}</span>
           </span>
         </div>
       </div>
       
-      <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
+      <div className="w-full bg-gray-100 rounded-full h-1.5 mb-2">
         <div 
           className={clsx(
-            "h-2 rounded-full transition-all duration-500",
+            "h-1.5 rounded-full transition-all duration-500",
             percentage >= 90 ? "bg-green-500" : percentage >= 60 ? "bg-yellow-500" : "bg-red-500"
           )}
           style={{ width: `${percentage}%` }}

@@ -11,7 +11,7 @@ export interface EvaluationResult {
   total_score: number;
   
   /** Overall level */
-  overall_level: 'Excellent' | 'Qualified' | 'Risk' | 'Unqualified';
+  overall_level: '优秀' | '合格' | '存在风险' | '不合格';
   
   /** Raw Confidence estimation (0.0 - 1.0) */
   confidence: number;

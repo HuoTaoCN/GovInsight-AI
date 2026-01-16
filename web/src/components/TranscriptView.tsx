@@ -6,7 +6,7 @@ export const TranscriptView: React.FC<{ content: string }> = ({ content }) => {
   const lines = content.trim().split('\n').filter(line => line.trim() !== '');
 
   return (
-    <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200 max-h-[500px] overflow-y-auto font-mono text-sm">
+    <div className="space-y-4 font-mono text-sm">
       {lines.map((line, idx) => {
         let role = 'unknown';
         let text = line;
