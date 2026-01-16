@@ -77,12 +77,12 @@ GovInsight-AI 不仅仅是一个打分工具，更是一个**智能辅助助手*
 
 ```mermaid
 graph TD
-    User[用户/质检员] -->|交互| Web[前端 (React + Vite)]
-    Web -->|HTTP POST| Server[后端 (Express)]
-    Server -->|组装 Prompt| LLM[Qwen-Plus (大模型)]
-    LLM -->|返回 JSON| Server
-    Server -->|解析结果| Web
-    Web -->|可视化报告| User
+    User["用户 / 质检员"] -->|交互| Web["前端 (React + Vite)"]
+    Web -->|"HTTP POST"| Server["后端 (Express)"]
+    Server -->|"组装 Prompt"| LLM["Qwen-Plus (大模型)"]
+    LLM -->|"返回 JSON"| Server
+    Server -->|"解析结果"| Web
+    Web -->|"可视化报告"| User
 ```
 
 ## 🛠️ 技术栈
