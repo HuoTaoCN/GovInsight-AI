@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### 🛠️ Infrastructure & DevEx (基础设施与开发体验)
 - **One-Click Setup**: 
   - 新增 `setup_and_run.sh` 自动化脚本，支持一键安装依赖并同时启动前后端服务。
-  - **Auto Node.js Runtime**: 脚本集成了 Node.js (v22.12.0) 自动下载功能。当检测到系统未安装 Node.js 或版本不兼容时，会自动下载独立的运行时环境到 `runtime/` 目录，确保项目在任何环境下都能“开箱即用”。
+  - **Auto Node.js Runtime**: 脚本集成了 Node.js (v24.13.0) 自动下载功能。当检测到系统未安装 Node.js 或版本不兼容时，会自动下载独立的运行时环境到 `runtime/` 目录，确保项目在任何环境下都能“开箱即用”。
 - **Configurable Model Name**:
   - 后端服务支持通过 `.env` 配置 `QWEN_MODEL_NAME` 环境变量。
   - 允许开发者灵活切换 Qwen 模型的不同版本（如 `qwen-plus`, `qwen-turbo`），无需修改代码。
