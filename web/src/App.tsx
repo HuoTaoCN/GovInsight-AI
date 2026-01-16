@@ -399,6 +399,26 @@ function App() {
           />
         </div>
       </main>
+      <footer className="bg-white border-t border-gray-200 py-6 mt-auto">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+          <div className="mb-4 md:mb-0">
+            <span className="font-bold text-gray-700">GovInsight-AI</span>
+            <span className="mx-2">|</span>
+            <span>于细微处，洞见政务未来</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span>&copy; {new Date().getFullYear()} Huotao</span>
+            <a 
+              href="https://ai.huotao.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-blue-600 transition-colors flex items-center gap-1"
+            >
+              Powered by 见微 (AInsight)
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
