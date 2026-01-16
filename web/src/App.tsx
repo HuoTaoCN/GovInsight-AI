@@ -165,8 +165,8 @@ function App() {
           <div className="flex items-center gap-3">
             <Logo className="text-blue-400" />
             <div>
-              <h1 className="text-xl font-bold tracking-tight">GovInsight-AI 热线工单质量智能检测系统</h1>
-              <p className="text-xs text-slate-400">V0.3.1 (Qwen Real-time API)</p>
+              <h1 className="text-xl font-bold tracking-tight">GovInsight-AI 热线工单质量智能检测系统 <span className="text-xs font-normal text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded ml-2">V0.3.2</span></h1>
+              <p className="text-xs text-slate-400">Intelligent Quality Inspection System for Government Service Hotline Work Orders</p>
             </div>
           </div>
           <button
