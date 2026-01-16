@@ -1,0 +1,31 @@
+{
+  "name": "GovInsight-AI Codespace",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "latest"
+    }
+  },
+  "forwardPorts": [3000, 5173],
+  "portsAttributes": {
+    "3000": {
+      "label": "Backend Server",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Web Application",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+  "postCreateCommand": "cd server && npm install && cp .env.example .env && cd ../web && npm install",
+  "remoteUser": "node"
+}
