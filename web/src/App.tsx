@@ -45,12 +45,11 @@ function App() {
   const [showResult, setShowResult] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<EvaluationResult | null>(null);
 
-  const isCustomMode = selectedCaseId === CUSTOM_CASE_ID;
+  const isCustomMode = true; // Always enable editing mode
 
   // Helper to get current input data
   const getCurrentInput = () => {
-    if (isCustomMode) return customInput;
-    return MOCK_CASES.find(c => c.id === selectedCaseId)?.input || MOCK_CASES[0].input;
+    return customInput;
   };
 
   const handleAnalyze = async () => {
@@ -102,12 +101,25 @@ function App() {
     setSelectedCaseId(id);
     setAnalysisResult(null);
     
-    // For Mock cases, always show result by default
-    // For Custom case, wait for user to click analyze
+    // When a case is selected (Mock or Custom), populate the input form
     if (id === CUSTOM_CASE_ID) {
+      // If switching to Custom, keep existing input or reset if needed (keeping helps continuity)
+      // For now, let's keep it as is.
       setShowResult(false);
     } else {
-      setShowResult(true);
+      // If switching to a Mock Case, LOAD it into the customInput state so it's editable
+      const mockCase = MOCK_CASES.find(c => c.id === id);
+      if (mockCase) {
+        setCustomInput(mockCase.input);
+        // We want to effectively treat this as "Custom Mode" but pre-filled
+        setSelectedCaseId(CUSTOM_CASE_ID); 
+        
+        // Restore the mock result initially so the user sees the demo state
+        setAnalysisResult(mockCase.result);
+        setShowResult(true);
+      } else {
+        setShowResult(false);
+      }
     }
   };
 
@@ -230,42 +242,19 @@ function App() {
 
         {/* Center: Work Order & Transcript Comparison */}
         <div className="col-span-12 lg:col-span-3 flex flex-col h-full gap-3 overflow-hidden">
-          {isCustomMode ? (
             <CaseEditor 
               input={customInput} 
               onChange={setCustomInput} 
             />
-          ) : (
-            <>
-              <div className="shrink-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <FileInput size={18} className="text-gray-600" />
-                  <h2 className="text-lg font-bold text-gray-800">1. 工单内容与录音内容</h2>
-                </div>
-                
-                <WorkOrderView input={getCurrentInput()} />
-
-                <div className="relative my-2">
-                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="bg-gray-50 px-2 text-sm text-gray-500">VS</span>
-                  </div>
-                </div>
+            <div className="flex-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-0">
+              <div className="bg-slate-50 border-b border-gray-200 px-4 py-3 flex items-center gap-2 shrink-0">
+                <MessageSquare size={18} className="text-slate-600" />
+                <h3 className="font-bold text-slate-800">通话录音转写 (事实依据)</h3>
               </div>
-
-              <div className="flex-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-0">
-                 <div className="bg-slate-50 border-b border-gray-200 px-4 py-3 flex items-center gap-2 shrink-0">
-                    <MessageSquare size={18} className="text-slate-600" />
-                    <h3 className="font-bold text-slate-800">通话录音转写 (事实依据)</h3>
-                 </div>
-                 <div className="p-4 flex-1 overflow-y-auto">
-                    <TranscriptView content={getCurrentInput().transcript} />
-                 </div>
+              <div className="p-4 flex-1 min-h-0 overflow-hidden">
+                <TranscriptView content={getCurrentInput().transcript} />
               </div>
-            </>
-          )}
+            </div>
         </div>
 
         {/* Right: AI Analysis Result */}

@@ -65,21 +65,44 @@ GovInsight-AI 不仅仅是一个打分工具，更是一个**智能辅助助手*
 
 > *（此处建议插入 GIF 动图或截图）*
 
-### 场景一：标准高分案例
-市民反映路灯损坏，话务员记录准确无误。
-**AI 识别结果**：**优秀**（100分），自动采信。
+### 场景一：标准高分案例 (Standard High Score)
+**案例背景**：市民来电反映幸福家园小区南门路灯损坏，话务员完整记录了时间、地点（含参照物）、损坏数量及具体诉求。
+**AI 检测焦点**：
+*   **完整性**：自动比对录音中的“两盏”、“南门近超市”等细节，确认无遗漏。
+*   **一致性**：确认话务员未歪曲市民的维修诉求。
+**AI 研判结果**：
+*   **得分**：100 分（优秀）
+*   **处置**：高置信度 (High Confidence) -> **自动采信**，无需人工干预。
 
-### 场景二：关键信息缺失
-用户在电话中强调了“盲道被堵”且“险些造成盲人受伤”，但工单仅记录“人行道乱停放”。
-**AI 识别结果**：**合格**（80分），扣除完整性分数，建议人工复核并补充“存在安全隐患”等关键细节。
+### 场景二：关键信息缺失 (Missing Key Info)
+**案例背景**：市民反映建设路共享单车乱停放，并在录音中反复强调“盲道被堵”且“险些造成盲人受伤”。工单仅记录“影响通行”。
+**AI 检测焦点**：
+*   **完整性**：识别出“盲道被堵”（重点治理项）和“安全隐患”（险些受伤）在工单中缺席。
+*   **风险意识**：指出话务员未标记安全隐患，导致优先级评估偏低。
+**AI 研判结果**：
+*   **得分**：80 分（合格）
+*   **处置**：中置信度 -> **建议人工复核**。
+*   **修正建议**：AI 自动补充“堵塞盲道”及“存在安全隐患”描述，并将优先级提升为“Urgent”。
 
-### 场景三：风险降级（严重警告）
-用户愤怒地表示“再不解决我就要去上访”且“孩子都住院了”，话务员仅记录为“异味反映”。
-**AI 识别结果**：**存在风险**（45分），判定为严重漏报高危风险（群体事件/舆情），建议标记为“特急”并强制复核。
+### 场景三：风险降级 (Risk Downgrading)
+**案例背景**：市民因化工厂异味问题多次投诉无果，情绪极度激动，扬言“要去拉横幅”、“找媒体曝光”，且提及“孩子住院”。工单仅记录为普通“异味反映”。
+**AI 检测焦点**：
+*   **风险敏感性**：捕捉到“拉横幅”（群体事件风险）、“找媒体”（舆情风险）及“孩子住院”（健康风险）。
+*   **一致性**：判定话务员将“最后通牒”降级为“一般诉求”，属于严重失职。
+**AI 研判结果**：
+*   **得分**：45 分（存在风险）
+*   **处置**：低置信度/高风险 -> **强制人工复核**。
+*   **警示**：系统标记为“严重漏报高危风险”，建议立即升级为“特急”工单。
 
-### 场景四：歪曲事实（投诉变咨询）
-用户明确大喊“我要投诉烧烤店扰民”，话务员却记录为“市民咨询餐饮业经营政策”。
-**AI 识别结果**：**不合格**（35分），判定为性质恶劣的“指鹿为马”，建议直接**退回重写**并追责。
+### 场景四：歪曲事实 (Fact Distortion)
+**案例背景**：市民明确高喊“我要投诉烧烤店扰民”，话务员却在工单中将其包装为“市民咨询餐饮业经营政策”，试图通过“咨询件”规避“投诉件”的考核。
+**AI 检测焦点**：
+*   **一致性**：发现录音中的核心意图（投诉/维权）与工单定性（咨询/求助）存在根本性冲突。
+*   **性质判定**：识别此类行为为恶劣的“指鹿为马”性质。
+**AI 研判结果**：
+*   **得分**：35 分（不合格）
+*   **处置**：高置信度 -> **建议直接退回重写**。
+*   **追责建议**：系统明确指出该工单属于性质恶劣的定性篡改，建议追究话务员责任。
 
 
 ## 🏗️ 系统架构
@@ -164,14 +187,110 @@ npm run dev
 
 **GovInsight-AI** is an open-source intelligent quality inspection system powered by **Large Language Models (LLM)** (specifically Qwen-Plus). It addresses the critical challenge of verification between "Call Transcripts" and "Operator Work Orders" in government service hotlines (e.g., 12345).
 
-By automatically comparing the dialogue with the written record, GovInsight-AI identifies **missing key information**, **semantic deviations**, and **risk downgrading**, providing interpretable scoring and constructive revision suggestions.
+Traditional manual inspection is inefficient, inconsistent, and often fails to detect subtle semantic tampering. GovInsight-AI solves this by automatically comparing audio transcripts with work order records, accurately identifying missing key information, semantic deviations, and risk downgrading, while providing intelligent revision suggestions.
 
-### Core Features
+### 📖 Background & Pain Points
 
-*   **Multi-dimensional Inspection**: Completeness, Consistency, Clarity, and Risk Awareness.
-*   **Chain of Thought (CoT)**: Displays full reasoning process for interpretable judgments.
-*   **Intelligent Strategy**: Auto-Pass for high confidence, Human Review for risks.
-*   **Auto-Revision**: Generates standardized revisions with highlighted diffs.
+In the daily operation of government service hotlines (like 12345), the **quality of work order records** directly affects the efficiency of handling public appeals and citizen satisfaction. However, traditional manual quality inspection faces significant challenges:
+
+*   **⚡️ Low Efficiency**: With massive volumes of calls and records, manual sampling rates are typically below 5%, leaving many problematic orders undetected.
+*   **📏 Inconsistent Standards**: Subjective judgments vary greatly among different inspectors, making it difficult to form a unified and fair evaluation system.
+*   **🙈 Hidden Tampering**: To avoid penalties, operators might privately change "Complaints" to "Consultations" or intentionally omit aggressive language, which is hard to verify without listening to every recording.
+*   **📉 Lagging Feedback**: Inspections are usually post-event (T+1 or even T+7), making it impossible to intercept and correct errors before the work order is dispatched.
+
+**GovInsight-AI** was born to solve these pain points by introducing LLM's semantic understanding capabilities into the inspection process, achieving **full-volume, real-time, and objective** intelligent detection.
+
+### ✨ Core Values & Features
+
+GovInsight-AI is not just a scoring tool, but an **Intelligent Assistant**.
+
+#### 1. 🔍 Multi-dimensional Intelligent Inspection
+The system performs a deep scan of work orders based on four core dimensions:
+*   **Completeness**: Detects omission of key elements like time, location, involved parties, and specific demands.
+*   **Consistency** *(Core Capability)*: Compares audio with the work order to find semantic tampering, factual deviations, or qualitative changes (e.g., turning a "Complaint" into a "Consultation").
+*   **Clarity**: Evaluates if the expression is clear, professional, and free of grammatical errors, ambiguity, or colloquialisms.
+*   **Risk Awareness**: Identifies if the operator ignored intense emotions, repeated complaint history, or potential risks of public opinion escalation.
+
+#### 2. 🧠 Explainable Chain of Thought (CoT)
+Reject "Black Box" judgments! The system displays the AI's full reasoning process:
+> *"The user explicitly mentioned 'this is the third complaint' in the recording, but this information was not recorded in the work order. This constitutes a key information omission and reduces the urgency of the issue..."*
+This explainability allows inspectors to quickly verify and trust the AI's judgment.
+
+#### 3. 🛡️ Intelligent Triage Strategy
+Introducing a **Confidence** mechanism to categorize work orders into three types:
+*   **✅ Auto-Pass**: Orders with Confidence ≥ 0.85 and no risks are automatically passed without human intervention.
+*   **👀 Sampling Review**: Orders with Confidence between 0.70 - 0.84 enter the sampling pool.
+*   **🚨 Mandatory Review**: Orders with Confidence < 0.70 or high risks (e.g., aggressive emotions) require mandatory human review.
+
+#### 4. ✍️ Auto-Revision & Diff
+When quality issues are detected, the AI not only reports errors but also **automatically rewrites** a standard work order.
+The system provides an intuitive **Diff View**, highlighting the differences between the original and the AI-suggested version, allowing operators or inspectors to adopt suggestions with one click.
+
+### Functional Demo Scenarios
+
+> *(GIF or screenshots recommended here)*
+
+#### Scenario 1: Standard High Score
+**Context**: A citizen reports a broken street light. The operator records the time, location, and issue accurately.
+**AI Detection Focus**:
+*   **Completeness**: Verifies details like "two lights" and "south gate near supermarket".
+*   **Consistency**: Confirms no distortion of the repair request.
+**AI Verdict**:
+*   **Score**: 100 (Excellent)
+*   **Action**: High Confidence -> **Auto-Pass**.
+
+#### Scenario 2: Missing Key Info
+**Context**: A citizen reports shared bikes blocking the sidewalk, repeatedly emphasizing "blocking the blind lane" and "nearly causing injury to a blind person". The work order only records "bikes affecting traffic".
+**AI Detection Focus**:
+*   **Completeness**: Identifies missing critical details: "blocking blind lane" (priority issue) and "safety hazard".
+*   **Risk Awareness**: Flags the failure to mark the safety hazard.
+**AI Verdict**:
+*   **Score**: 80 (Qualified)
+*   **Action**: Medium Confidence -> **Human Review Suggested**.
+*   **Revision**: AI automatically adds "blocking blind lane" and "safety hazard", upgrading priority to "Urgent".
+
+#### Scenario 3: Risk Downgrading
+**Context**: A citizen complains about chemical odors for the 3rd time, threatening to "protest with banners" and mentioning "child hospitalized". The operator records it as a standard "odor complaint".
+**AI Detection Focus**:
+*   **Risk Awareness**: Captures high-risk keywords: "protest" (mass incident risk), "media exposure" (public opinion risk), and "child hospitalized" (health risk).
+*   **Consistency**: Determines the operator downgraded a "final ultimatum" to a "general request", a serious dereliction of duty.
+**AI Verdict**:
+*   **Score**: 45 (Risk)
+*   **Action**: Low Confidence / High Risk -> **Mandatory Human Review**.
+*   **Alert**: System flags "Serious Omission of High Risk", suggesting an immediate upgrade to "Emergency".
+
+#### Scenario 4: Fact Distortion
+**Context**: A citizen explicitly shouts "I want to file a complaint about noise", but the operator records it as "Citizen consulting on catering policies" to avoid a complaint record.
+**AI Detection Focus**:
+*   **Consistency**: Detects a fundamental conflict between the core intent (Complaint) and work order type (Consultation).
+*   **Nature Judgment**: Identifies this as malicious "calling a stag a horse" (fact distortion).
+**AI Verdict**:
+*   **Score**: 35 (Unqualified)
+*   **Action**: High Confidence -> **Reject & Rewrite**.
+*   **Accountability**: System explicitly identifies malicious tampering and suggests accountability measures.
+
+### System Architecture
+
+```mermaid
+graph TD
+    User["User / Inspector"] -->|Interaction| Web["Frontend (React + Vite)"]
+    Web -->|"HTTP POST"| Server["Backend (Express)"]
+    Server -->|"Construct Prompt"| LLM["Qwen-Plus (LLM)"]
+    LLM -->|"Return JSON"| Server
+    Server -->|"Parse Result"| Web
+    Web -->|"Visual Report"| User
+```
+
+1.  **Frontend**: Built with React & Vite, providing an interactive dashboard for inspectors to view transcripts, work orders, and AI analysis results side-by-side.
+2.  **Backend**: A lightweight Express server that handles API requests, constructs context-aware prompts (injecting history factors), and communicates with the LLM provider.
+3.  **Core Engine**: Powered by Qwen-Plus (via Aliyun DashScope), performing the 5-layer reasoning process to generate scores, confidence levels, and revisions.
+
+### Tech Stack
+
+*   **Frontend**: React 19, TypeScript, Tailwind CSS 4, Lucide Icons, Vite 7
+*   **Backend**: Node.js, Express, OpenAI SDK (Adapter)
+*   **AI Model**: Qwen-Plus (via Aliyun DashScope)
+*   **Prompt Engineering**: 5-layer reasoning logic (Scoring -> Confidence -> Strategy -> Calibration -> Revision)
 
 ### Quick Start
 

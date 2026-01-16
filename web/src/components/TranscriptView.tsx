@@ -4,9 +4,10 @@ import { User, Headphones, Building2 } from 'lucide-react';
 export const TranscriptView: React.FC<{ content: string }> = ({ content }) => {
   // Simple parser to split dialogue based on common prefixes
   const lines = content.trim().split('\n').filter(line => line.trim() !== '');
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <div className="space-y-4 font-mono text-sm">
+    <div ref={scrollRef} className="space-y-4 font-mono text-sm h-full overflow-y-auto pr-2">
       {lines.map((line, idx) => {
         let role = 'unknown';
         let text = line;
