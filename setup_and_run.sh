@@ -5,7 +5,7 @@ install_local_node() {
     echo "System Node.js not found. Attempting to install local runtime..."
     
     RUNTIME_DIR="$(pwd)/runtime"
-    NODE_VERSION="v24.13.0"
+    NODE_VERSION="v22.13.0"
     
     # Check OS and Arch
     OS="$(uname -s)"
@@ -28,7 +28,7 @@ install_local_node() {
     
     if [ ! -f "$RUNTIME_DIR/$NODE_DIST/bin/node" ]; then
         echo "Downloading Node.js ($NODE_VERSION) for $ARCH..."
-        curl -o "$RUNTIME_DIR/node.tar.gz" "$NODE_URL"
+        curl -L -f -o "$RUNTIME_DIR/node.tar.gz" "$NODE_URL"
         
         echo "Extracting..."
         tar -xzf "$RUNTIME_DIR/node.tar.gz" -C "$RUNTIME_DIR"
