@@ -1,8 +1,8 @@
 <div align="center">
 
 # GovInsight-AI
+# 热线工单质量智能检测系统
 
-**热线工单质量智能检测系统**
 **Intelligent Quality Inspection System for Government Service Hotline Work Orders**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)

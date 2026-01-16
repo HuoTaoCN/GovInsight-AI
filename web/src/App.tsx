@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { MOCK_CASES } from './data/mock_cases';
-import type { MockCase } from './data/mock_cases';
 import { TranscriptView } from './components/TranscriptView';
 import { ScoreCard } from './components/ScoreCard';
 import { WorkOrderView } from './components/WorkOrderView';
 import { CaseEditor } from './components/CaseEditor';
-import { Activity, BrainCircuit, Play, MessageSquare, FileInput, AlertTriangle, ShieldCheck, UserCheck, CheckCircle, Edit3 } from 'lucide-react';
+import { Activity, BrainCircuit, Play, MessageSquare, FileInput, ShieldCheck, UserCheck, CheckCircle, Edit3 } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { EvaluationResult, WorkOrderInput } from './types/quality_inspection';
 
@@ -303,7 +302,18 @@ function App() {
                {showResult && displayResult && displayResult.reasoning_trace ? (
                  <div className="bg-gray-50 text-gray-700 p-4 rounded-lg border border-gray-200 text-sm leading-relaxed font-mono">
                     <div className="whitespace-pre-wrap max-h-60 overflow-y-auto">
-                      {displayResult.reasoning_trace}
+                      {/* Format the reasoning trace: replace semicolons and numbered lists with newlines */}
+                      {displayResult.reasoning_trace.split(/(?:;|\d+\.)/).map((segment, index) => {
+                        const trimmed = segment.trim();
+                        if (!trimmed) return null;
+                        // Simplified approach: just list items without bold markdown artifacts
+                        const cleanText = trimmed.replace(/\*\*/g, '');
+                        return (
+                          <div key={index} className="mb-2 last:mb-0">
+                            {index > 0 ? `${index}. ` : ''}{cleanText}
+                          </div>
+                        );
+                      })}
                     </div>
                  </div>
                ) : (
@@ -330,7 +340,7 @@ function App() {
             <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={18} className="text-blue-700" />
-                <h3 className="font-bold text-blue-800">处置建议</h3>
+                <h3 className="font-bold text-blue-800">置信度和处置建议</h3>
               </div>
             </div>
             
@@ -371,6 +381,21 @@ function App() {
 
                   <div className="pt-3 border-t border-gray-100">
                     <div className="text-xs font-bold text-gray-500 uppercase mb-2">改进建议</div>
+                    <div className="mb-2">
+                      {displayResult.total_score >= 90 && !displayResult.need_human_review ? (
+                        <span className="bg-green-600 text-white px-3 py-1 rounded text-sm font-bold shadow-sm">
+                          通过 (Pass)
+                        </span>
+                      ) : displayResult.need_human_review ? (
+                        <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold shadow-sm">
+                          人工复核 (Human Review)
+                        </span>
+                      ) : (
+                        <span className="bg-yellow-500 text-white px-3 py-1 rounded text-sm font-bold shadow-sm">
+                          退回重写 (Rewrite)
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-700 bg-gray-50 p-2 rounded leading-relaxed">
                       {displayResult.suggestion}
                     </p>

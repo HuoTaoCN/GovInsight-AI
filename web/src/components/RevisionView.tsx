@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileCheck, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
+import { AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 import { clsx } from 'clsx';
 import { CheckCircle } from 'lucide-react';
 
