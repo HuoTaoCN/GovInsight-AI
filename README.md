@@ -4,6 +4,7 @@
 
 **Intelligent Quality Inspection System for Government Service Hotline Work Orders**
 
+[![Version](https://img.shields.io/badge/Version-V0.3.2-orange?style=flat-square)](CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![React](https://img.shields.io/badge/React-v19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-43853D?style=flat-square&logo=node.js&logoColor=white)
@@ -137,7 +138,8 @@ npm run dev
 *   [x] **V0.1**: 基础评分功能 (Basic Scoring)
 *   [x] **V0.2**: 置信度评估与分级处置 (Confidence & Bucketing)
 *   [x] **V0.3**: UI 重构、条件式修正生成、Mock 演示模式
-    *   *V0.3.1 (Latest)*: Dashboard 布局重构、评分标准 Tooltip、新 Logo 设计。
+    *   *V0.3.2 (Latest)*: 一键自动化部署脚本、模型配置化、Node.js 运行时自动管理。
+    *   *V0.3.1*: Dashboard 布局重构、评分标准 Tooltip、新 Logo 设计。
 *   [ ] **V0.4**: 支持批量上传与 CSV 导出
 *   [ ] **V0.5**: 集成 RAG (检索增强生成) 以支持本地知识库（如政策法规库）的合规性检测
 *   [ ] **V1.0**: 完整的仪表盘 (Dashboard) 与多租户支持
