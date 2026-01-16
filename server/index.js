@@ -136,7 +136,7 @@ ${JSON.stringify(history_factors || {})}
     `;
 
     const completion = await client.chat.completions.create({
-      model: "qwen-plus-2025-12-01", 
+      model: process.env.QWEN_MODEL_NAME || "qwen-plus-2025-12-01", 
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }

@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+.npm
+.yarn
+runtime
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Build output
+dist
+build

@@ -41,6 +41,7 @@
 ```env
 QWEN_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+QWEN_MODEL_NAME=qwen-plus-2025-12-01
 ```
 
 ## AI 质检逻辑 (System Prompt)

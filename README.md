@@ -93,7 +93,19 @@ graph TD
 
 ## 🚀 快速开始
 
-### 1. 环境准备
+### ⚡️ 自动安装 (推荐)
+
+我们提供了一键启动脚本，可自动安装依赖并启动服务：
+
+```bash
+./setup_and_run.sh
+```
+
+首次运行前，请确保您已拥有 Node.js 环境。脚本会自动创建配置文件，请随后在 `server/.env` 中填入您的 API Key。
+
+### 手动安装
+
+#### 1. 环境准备
 *   Node.js (v18+)
 *   npm 或 yarn
 *   阿里云 Qwen API Key (或兼容 OpenAI 格式的其他 LLM Key)
