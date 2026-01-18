@@ -11,7 +11,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        // 如果你本地运行了 wrangler dev，默认端口通常是 8788
+        // 如果使用 wrangler pages dev，则不需要此代理，因为它会托管整个应用
+        target: 'http://localhost:8788', 
         changeOrigin: true,
       }
     }

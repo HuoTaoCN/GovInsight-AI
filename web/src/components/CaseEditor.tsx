@@ -45,32 +45,43 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
           <h2 className="text-lg font-bold text-gray-800">1. 手动录入测试</h2>
         </div>
 
-        {/* Work Order Form Editor */}
         <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50 shrink-0">
-          <div className="bg-blue-50 border-b border-blue-100 px-4 py-3 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <FileText size={18} className="text-blue-700" />
-              <h3 className="font-bold text-blue-800">工单详情</h3>
-            </div>
-            <div className="flex gap-2 items-center">
-              <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-blue-200">
-                 <span className="text-xs text-gray-500 font-mono">No.</span>
-                 <input 
-                   type="text"
-                   value={metadata.ticket_id}
-                   onChange={(e) => handleMetadataChange('ticket_id', e.target.value)}
-                   className="text-xs font-mono font-bold text-gray-700 w-28 outline-none bg-transparent"
-                 />
+          <div className="bg-blue-50 border-b border-blue-100 px-3 py-2">
+            <div className="flex flex-wrap justify-between items-center gap-y-2 gap-x-2">
+              <div className="flex items-center gap-2 shrink-0">
+                <FileText size={16} className="text-blue-700" />
+                <h3 className="font-bold text-blue-800 whitespace-nowrap text-sm">工单详情</h3>
               </div>
-              <select
-                value={form_data.priority}
-                onChange={(e) => handleFormChange('priority', e.target.value as any)}
-                className="px-2 py-1 text-xs rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700"
-              >
-                <option value="Normal">普通</option>
-                <option value="Urgent">紧急</option>
-                <option value="Emergency">特急</option>
-              </select>
+              <div className="flex flex-wrap gap-2 items-center ml-auto">
+                <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-blue-200 shadow-sm">
+                   <span className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">NO.</span>
+                   <input 
+                     type="text"
+                     value={metadata.ticket_id}
+                     onChange={(e) => handleMetadataChange('ticket_id', e.target.value)}
+                     className="text-xs font-mono font-bold text-gray-700 w-24 outline-none bg-transparent"
+                   />
+                </div>
+                <div className="flex gap-1">
+                  <select
+                    value={form_data.priority}
+                    onChange={(e) => handleFormChange('priority', e.target.value as any)}
+                    className="px-2 py-1 text-xs rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors"
+                  >
+                    <option value="Normal">普通</option>
+                    <option value="Urgent">紧急</option>
+                    <option value="Emergency">特急</option>
+                  </select>
+                  <select
+                    value={form_data.handling_type || 'Dispatch'}
+                    onChange={(e) => handleFormChange('handling_type', e.target.value as any)}
+                    className="px-2 py-1 text-xs rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors"
+                  >
+                    <option value="Dispatch">转办</option>
+                    <option value="Direct">直接办结</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 

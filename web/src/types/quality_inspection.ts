@@ -36,6 +36,7 @@ export interface EvaluationResult {
     title: string;
     description: string;
     priority: string;
+    handling_type: string;
   };
 
   /** Chain of Thought Trace (Optional for display) */
@@ -76,6 +77,7 @@ export interface WorkOrderInput {
     citizen_name: string;
     citizen_phone: string;
     priority: 'Normal' | 'Urgent' | 'Emergency';
+    handling_type: 'Direct' | 'Dispatch';
   };
 
   metadata: {

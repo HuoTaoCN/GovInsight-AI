@@ -1,18 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const OpenAI = require('openai');
-require('dotenv').config();
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { OpenAI } from 'openai';
 
-const app = express();
-const port = 3000;
+const app = new Hono();
 
-app.use(cors());
-app.use(express.json());
-
-const client = new OpenAI({
-  apiKey: process.env.QWEN_API_KEY,
-  baseURL: process.env.QWEN_BASE_URL,
-});
+app.use('/*', cors());
 
 const SYSTEM_PROMPT = `# 角色定义
 你是一名为 12345 政务服务便民热线工作的**首席质检专家**。你的职责不是取代人工决策，而是通过可解释、可审计的方式，识别工单记录中的偏差、遗漏风险及治理隐患。
@@ -123,9 +115,14 @@ const SYSTEM_PROMPT = `# 角色定义
 }
 `;
 
-app.post('/api/analyze', async (req, res) => {
+app.post('/api/analyze', async (c) => {
   try {
-    const { transcript, form_data, history_factors } = req.body;
+    const { transcript, form_data, history_factors } = await c.req.json();
+
+    const client = new OpenAI({
+      apiKey: c.env.QWEN_API_KEY,
+      baseURL: c.env.QWEN_BASE_URL,
+    });
 
     const userPrompt = `
 <dialogue_summary>
@@ -137,6 +134,7 @@ Title: ${form_data.title}
 Description: ${form_data.description}
 Citizen: ${form_data.citizen_name}
 Priority: ${form_data.priority}
+HandlingType: ${form_data.handling_type || 'Dispatch'}
 </work_order>
 
 <history_factors>
@@ -145,30 +143,27 @@ ${JSON.stringify(history_factors || {})}
     `;
 
     const completion = await client.chat.completions.create({
-      model: process.env.QWEN_MODEL_NAME || "qwen-plus-2025-12-01", 
+      model: c.env.QWEN_MODEL_NAME || "qwen-plus-2025-12-01",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }
       ],
-      temperature: 0.1, // Low temperature for consistent JSON output
-      max_tokens: 4000 // Ensure enough space for the full response including revision
+      temperature: 0.1,
+      max_tokens: 4000
     });
 
     const content = completion.choices[0].message.content;
-    console.log("Qwen Raw Output:", content); // Debug: Check raw output from AI
+    console.log("Qwen Raw Output:", content);
     
-    // Simple parsing to handle potential markdown blocks
     const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim();
     const result = JSON.parse(jsonStr);
 
-    res.json(result);
+    return c.json(result);
 
   } catch (error) {
     console.error("Error calling Qwen API:", error);
-    res.status(500).json({ error: "Failed to analyze work order" });
+    return c.json({ error: "Failed to analyze work order" }, 500);
   }
 });
 
-app.listen(port, () => {
-  console.log(`Backend server running at http://localhost:${port}`);
-});
+export default app;

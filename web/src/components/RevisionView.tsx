@@ -15,11 +15,13 @@ interface RevisionViewProps {
     title: string;
     description: string;
     priority: string;
+    handling_type?: string;
   };
   revision?: {
     title: string;
     description: string;
     priority: string;
+    handling_type?: string;
   } | null;
 }
 
@@ -94,24 +96,48 @@ export const RevisionView: React.FC<RevisionViewProps> = ({ isAnalyzed = false, 
           )}
         </div>
 
-        {/* Priority Comparison */}
-        <div>
-           <div className="text-xs font-bold text-gray-500 mb-1 uppercase">优先级</div>
-           {original.priority !== revision.priority ? (
-              <div className="flex items-center gap-3">
-                 <span className="text-xs text-gray-500 line-through">{PRIORITY_MAP[original.priority] || original.priority}</span>
-                 <ArrowRight size={12} className="text-gray-400" />
-                 <span className={clsx(
-                   "text-xs font-bold px-2 py-1 rounded",
-                   revision.priority === 'Emergency' ? "bg-red-100 text-red-700" :
-                   revision.priority === 'Urgent' ? "bg-orange-100 text-orange-700" : "bg-blue-100 text-blue-700"
-                 )}>
-                   {PRIORITY_MAP[revision.priority] || revision.priority}
-                 </span>
-              </div>
-           ) : (
-              <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded">{PRIORITY_MAP[original.priority] || original.priority}</span>
-           )}
+        {/* Combined Priority & Handling Type */}
+        <div className="flex gap-4">
+          <div className="flex-1">
+             <div className="text-xs font-bold text-gray-500 mb-1 uppercase">优先级</div>
+             {original.priority !== revision.priority ? (
+                <div className="flex items-center gap-2 text-sm">
+                   <span className="text-gray-400 line-through decoration-gray-400/50">{PRIORITY_MAP[original.priority] || original.priority}</span>
+                   <ArrowRight size={14} className="text-gray-300" />
+                   <span className={clsx(
+                     "font-bold px-2 py-0.5 rounded",
+                     revision.priority === 'Emergency' ? "bg-red-50 text-red-700 border border-red-200" :
+                     revision.priority === 'Urgent' ? "bg-orange-50 text-orange-700 border border-orange-200" : "bg-blue-50 text-blue-700 border border-blue-200"
+                   )}>
+                     {PRIORITY_MAP[revision.priority] || revision.priority}
+                   </span>
+                </div>
+             ) : (
+                <span className="text-sm font-medium text-gray-700 bg-gray-50 px-2 py-1 rounded border border-gray-100 inline-block">{PRIORITY_MAP[original.priority] || original.priority}</span>
+             )}
+          </div>
+
+          <div className="flex-1">
+             <div className="text-xs font-bold text-gray-500 mb-1 uppercase">处理方式</div>
+             {(original.handling_type || 'Dispatch') !== (revision.handling_type || 'Dispatch') ? (
+                <div className="flex items-center gap-2 text-sm">
+                   <span className="text-gray-400 line-through decoration-gray-400/50">
+                      {original.handling_type === 'Direct' ? '直接办结' : '转办'}
+                   </span>
+                   <ArrowRight size={14} className="text-gray-300" />
+                   <span className={clsx(
+                     "font-bold px-2 py-0.5 rounded",
+                     revision.handling_type === 'Direct' ? "bg-green-50 text-green-700 border border-green-200" : "bg-purple-50 text-purple-700 border border-purple-200"
+                   )}>
+                     {revision.handling_type === 'Direct' ? '直接办结' : '转办'}
+                   </span>
+                </div>
+             ) : (
+                <span className="text-sm font-medium text-gray-700 bg-gray-50 px-2 py-1 rounded border border-gray-100 inline-block">
+                  {original.handling_type === 'Direct' ? '直接办结' : '转办'}
+                </span>
+             )}
+          </div>
         </div>
 
         {/* Description Comparison */}

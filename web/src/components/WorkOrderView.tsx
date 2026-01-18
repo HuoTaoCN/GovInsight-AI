@@ -8,12 +8,12 @@ export const WorkOrderView: React.FC<{ input: WorkOrderInput }> = ({ input }) =>
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-      <div className="bg-slate-50 border-b border-gray-200 px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center gap-2">
+      <div className="bg-slate-50 border-b border-gray-200 px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <FileText size={18} className="text-slate-600" />
-          <h3 className="font-bold text-slate-800">工单详情</h3>
+          <h3 className="font-bold text-slate-800 whitespace-nowrap">工单详情</h3>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 ml-auto">
           <span className="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full font-mono">
             {metadata.ticket_id}
           </span>
@@ -25,6 +25,12 @@ export const WorkOrderView: React.FC<{ input: WorkOrderInput }> = ({ input }) =>
           )}>
             {form_data.priority === 'Normal' ? '普通' : 
              form_data.priority === 'Urgent' ? '紧急' : '特急'}
+          </span>
+          <span className={clsx(
+            "px-2 py-0.5 text-xs rounded-full font-bold",
+            form_data.handling_type === 'Direct' ? "bg-green-100 text-green-700" : "bg-purple-100 text-purple-700"
+          )}>
+            {form_data.handling_type === 'Direct' ? '直接办结' : '转办'}
           </span>
         </div>
       </div>

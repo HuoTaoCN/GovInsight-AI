@@ -31,7 +31,8 @@ export const MOCK_CASES: MockCase[] = [
         description: "市民来电反映幸福家园小区南门（近家家乐超市）有两盏路灯不亮，已持续两三天，影响夜间出行，要求尽快维修。",
         citizen_name: "王先生",
         citizen_phone: "138****8888",
-        priority: "Normal"
+        priority: "Normal",
+        handling_type: "Dispatch"
       },
       metadata: {
         ticket_id: "20250101-001",
@@ -82,7 +83,8 @@ export const MOCK_CASES: MockCase[] = [
         description: "市民反映建设路（建设银行门口）人行道有共享单车乱停放，影响通行。",
         citizen_name: "匿名",
         citizen_phone: "139****1234",
-        priority: "Normal"
+        priority: "Normal",
+        handling_type: "Dispatch"
       },
       metadata: {
         ticket_id: "20250105-088",
@@ -122,7 +124,8 @@ export const MOCK_CASES: MockCase[] = [
       suggested_revision: {
         title: "建设路共享单车乱停放堵塞盲道",
         description: "市民反映建设路（建设银行门口）人行道有大量共享单车乱停放，严重堵塞盲道，且险些造成盲人受伤，存在安全隐患，要求尽快清理。",
-        priority: "Urgent"
+        priority: "Urgent",
+        handling_type: "Dispatch"
       },
       reasoning_trace: "1. **信息比对**：市民反复强调'盲道被堵'和'安全隐患'，但工单仅记录'影响通行'，存在明显信息遗漏。\n2. **严重性评估**：普通乱停放与堵塞盲道性质不同，后者应优先处置。\n3. **结论**：工单虽然覆盖了基本事实，但丢失了核心加急情节，建议完善。"
     }
@@ -147,7 +150,8 @@ export const MOCK_CASES: MockCase[] = [
         description: "市民再次来电反映城南化工园区有异味，要求再次核查。",
         citizen_name: "张某",
         citizen_phone: "133****9999",
-        priority: "Normal"
+        priority: "Normal",
+        handling_type: "Dispatch"
       },
       metadata: {
         ticket_id: "20250110-999",
@@ -216,7 +220,8 @@ export const MOCK_CASES: MockCase[] = [
         description: "市民来电咨询餐饮业夜间经营时间规定及环保排放标准，请求相关部门解答。",
         citizen_name: "李先生",
         citizen_phone: "136****5678",
-        priority: "Normal"
+        priority: "Normal",
+        handling_type: "Direct"
       },
       metadata: {
         ticket_id: "20250115-004",
@@ -259,9 +264,81 @@ export const MOCK_CASES: MockCase[] = [
       suggested_revision: {
         title: "幸福路老王烧烤噪音及油烟扰民投诉",
         description: "市民来电投诉幸福路“老王烧烤”夜间噪音扰民（持续至凌晨三四点）及油烟污染问题。市民表示此前已投诉无果，情绪激动，要求相关部门尽快查处。",
-        priority: "Urgent"
+        priority: "Urgent",
+        handling_type: "Dispatch"
       },
       reasoning_trace: "1. **意图识别**：市民反复强调'我要投诉'、'噪音扰民'，意图极其明确。\n2. **行为分析**：话务员无视市民诉求，强行将其引导并记录为'政策咨询'。\n3. **结论**：工单完全捏造了诉求性质，属于性质恶劣的'指鹿为马'，系统以高置信度判定为不合格。"
+    }
+  },
+  {
+    id: "case-005",
+    name: "处理方式错误 (高置信度/纠正流转)",
+    description: "话务员试图'直接办结'复杂投诉，AI 识别后强制修正为'转办'，防止工单空转。",
+    input: {
+      transcript: `话务员：您好，请问有什么可以帮您？
+市民：你好，我在滨河公园这边，发现有人在河边私自搭建了一个彩钢房，看起来像是要搞烧烤，这也太破坏环境了吧？
+话务员：先生，您反映的是滨河公园内部还是外围？
+市民：就在公园里面的河堤上，肯定是违建！你们得赶紧派人来拆了，不然过几天就营业了！
+话务员：好的，先生。您的意见我们已经记录下来了，我们会作为一条建议反馈上去的。感谢您的来电。
+市民：不是，我是要投诉违建，你们不派执法队来看看吗？
+话务员：先生，公园管理属于内部事务，我们这边作为建议记录即可，不需要转派执法队。
+市民：这明明是违建，怎么就成建议了？
+话务员：好的，已经帮您办结归档了。再见。
+      `,
+      form_data: {
+        title: "关于滨河公园环境管理的建议",
+        description: "市民建议加强滨河公园河堤周边的环境巡查，防止乱搭乱建。",
+        citizen_name: "赵先生",
+        citizen_phone: "158****6666",
+        priority: "Normal",
+        handling_type: "Direct"
+      },
+      metadata: {
+        ticket_id: "20250120-056",
+        category: "城市管理/市容环卫/违章搭建",
+        timestamp: "2025-01-20 10:15:00",
+        handling_department: "无",
+        status: "Closed"
+      },
+      history_factors: {
+        agent_consistency_score: 0.88,
+        has_callback_complaint: false
+      }
+    },
+    result: {
+      scores: {
+        completeness: { 
+          score: 25, 
+          judgement: "基本完整", 
+          issues: ["弱化了'私搭乱建'的具体位置和性质"] 
+        },
+        consistency: { 
+          score: 15, 
+          judgement: "部分偏差", 
+          issues: ["处理方式错误：将'违建投诉'作为'建议'直接办结"] 
+        },
+        clarity: { score: 20, judgement: "规范", issues: [] },
+        risk_awareness: { 
+          score: 15, 
+          judgement: "一般", 
+          issues: ["未意识到违建拆除的时效性"] 
+        }
+      },
+      total_score: 75,
+      overall_level: "合格", // 虽然分数尚可，但处理方式是硬伤
+      confidence: 0.90,
+      adjusted_confidence: 0.90,
+      confidence_bucket: "High",
+      need_human_review: true,
+      review_reason: "检测到处理方式（Handling Type）错误：涉及违建查处的投诉不应直接办结，必须转办至城管执法部门。",
+      suggestion: "该诉求涉及违法建设查处，属于执法类事项，严禁'直接办结'。请修改为'转办'并派发至城管局或园林局。",
+      suggested_revision: {
+        title: "滨河公园河堤私搭乱建投诉",
+        description: "市民投诉滨河公园内部河堤上存在私搭乱建（彩钢房），疑似用于烧烤经营，破坏环境，要求尽快拆除。",
+        priority: "Normal",
+        handling_type: "Dispatch"
+      },
+      reasoning_trace: "1. **性质研判**：市民反映的是'私搭乱建'（违建），属于需要现场执法的行政行为。\n2. **流程合规**：话务员选择'Direct'（直接办结）并作为建议归档，导致问题无法进入执法流程。\n3. **结论**：处理方式严重违规，AI 强制修正为'Dispatch'（转办）。"
     }
   }
 ];
