@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { MOCK_CASES } from './data/mock_cases';
 import { TranscriptView } from './components/TranscriptView';
 import { ScoreCard } from './components/ScoreCard';
-import { WorkOrderView } from './components/WorkOrderView';
 import { CaseEditor } from './components/CaseEditor';
 import { Tooltip } from './components/Tooltip';
 import { Logo } from './components/Logo';
-import { Activity, BrainCircuit, Play, MessageSquare, FileInput, ShieldCheck, UserCheck, CheckCircle, Edit3, HelpCircle } from 'lucide-react';
+import { Activity, BrainCircuit, Play, MessageSquare, ShieldCheck, UserCheck, CheckCircle, Edit3, HelpCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { EvaluationResult, WorkOrderInput } from './types/quality_inspection';
 
@@ -20,7 +19,8 @@ const INITIAL_CUSTOM_INPUT: WorkOrderInput = {
     description: '',
     citizen_name: '',
     citizen_phone: '',
-    priority: 'Normal'
+    priority: 'Normal',
+    handling_type: 'Dispatch'
   },
   metadata: {
     ticket_id: '20250114-NEW',
@@ -501,7 +501,8 @@ function App() {
               original={displayResult ? {
                 title: getCurrentInput().form_data.title,
                 description: getCurrentInput().form_data.description,
-                priority: getCurrentInput().form_data.priority
+                priority: getCurrentInput().form_data.priority,
+                handling_type: getCurrentInput().form_data.handling_type
               } : undefined}
               revision={displayResult?.suggested_revision}
             />
