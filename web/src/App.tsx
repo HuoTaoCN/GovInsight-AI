@@ -503,7 +503,7 @@ function App() {
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-3">
           {/* Left: Copyright & Contact */}
           <div className="flex items-center gap-4">
-             <span className="font-medium text-gray-600">&copy; {new Date().getFullYear()} Huotao.com</span>
+             <span className="font-medium text-gray-600">&copy; {new Date().getFullYear()} gi.huotao.com</span>
              <a href="mailto:mail@huotao.com" className="flex items-center gap-1.5 hover:text-blue-600 transition-colors">
                <Mail size={14} />
                <span>mail@huotao.com</span>
