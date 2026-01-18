@@ -39,12 +39,15 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
 
   return (
     <div className="flex flex-col h-full gap-3 overflow-hidden">
-      <div className="shrink-0 flex flex-col gap-2 max-h-[60%] overflow-y-auto pr-1">
-        <div className="flex items-center gap-2 mb-1 shrink-0">
-          <Edit3 size={18} className="text-gray-600" />
-          <h2 className="text-lg font-bold text-gray-800">1. 手动录入测试</h2>
-        </div>
+      {/* Title Header - Fixed */}
+      <div className="flex items-center gap-2 shrink-0">
+        <Edit3 size={18} className="text-gray-600" />
+        <h2 className="text-lg font-bold text-gray-800">1. 手动录入测试</h2>
+      </div>
 
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto min-h-0 pr-1 space-y-3 flex flex-col">
+        {/* Work Order Form Editor */}
         <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50 shrink-0">
           <div className="bg-blue-50 border-b border-blue-100 px-3 py-2">
             <div className="flex flex-wrap justify-between items-center gap-y-2 gap-x-2">
@@ -144,23 +147,23 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
             <span className="bg-gray-50 px-2 text-sm text-gray-500">VS</span>
           </div>
         </div>
-      </div>
 
-      {/* Transcript Editor */}
-      <div className="flex-1 min-h-0 bg-white rounded-lg border border-purple-200 shadow-sm overflow-hidden ring-2 ring-purple-50 flex flex-col">
-        <div className="bg-purple-50 border-b border-purple-100 px-4 py-3 flex items-center gap-2 shrink-0">
-          <MessageSquare size={18} className="text-purple-700" />
-          <h3 className="font-bold text-purple-800">通话录音转写 (事实依据)</h3>
-        </div>
-        <div className="p-4 flex-1">
-          <textarea
-            value={transcript}
-            onChange={(e) => handleTranscriptChange(e.target.value)}
-            className="w-full h-full text-sm leading-relaxed text-gray-700 p-4 bg-gray-50 rounded-lg border border-gray-200 font-mono focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none resize-none"
-            placeholder={`市民：你好，我想反映...
+        {/* Transcript Editor */}
+        <div className="bg-white rounded-lg border border-purple-200 shadow-sm overflow-hidden ring-2 ring-purple-50 flex flex-col flex-1 min-h-[200px]">
+          <div className="bg-purple-50 border-b border-purple-100 px-4 py-3 flex items-center gap-2 shrink-0">
+            <MessageSquare size={18} className="text-purple-700" />
+            <h3 className="font-bold text-purple-800">通话录音转写 (事实依据)</h3>
+          </div>
+          <div className="p-4 flex-1 h-full">
+            <textarea
+              value={transcript}
+              onChange={(e) => handleTranscriptChange(e.target.value)}
+              className="w-full h-full text-sm leading-relaxed text-gray-700 p-4 bg-gray-50 rounded-lg border border-gray-200 font-mono focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none resize-none"
+              placeholder={`市民：你好，我想反映...
 话务员：请问具体位置是？
 市民：...`}
-          />
+            />
+          </div>
         </div>
       </div>
     </div>
