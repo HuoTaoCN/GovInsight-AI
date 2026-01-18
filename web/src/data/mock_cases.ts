@@ -195,7 +195,8 @@ export const MOCK_CASES: MockCase[] = [
       suggested_revision: {
         title: "【加急】城南化工园区异味严重扰民投诉",
         description: "市民再次来电反映城南化工园区异味严重，导致孩子住院（健康受损），已投诉三次无果。市民情绪极其激动，扬言若不解决将采取拉横幅、找媒体等极端措施（有群体事件及舆情风险）。",
-        priority: "Emergency"
+        priority: "Emergency",
+        handling_type: "Dispatch"
       },
       reasoning_trace: "1. **风险识别**：录音中出现'拉横幅'、'找媒体'、'孩子住院'等高危关键词。\n2. **工单对比**：工单仅记录为'有异味'，优先级选为'Normal'，完全未体现上述风险。\n3. **结论**：存在极大的漏报风险，极易引发次生舆情，判定为高风险工单。"
     }

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { MOCK_CASES } from './data/mock_cases';
-import { TranscriptView } from './components/TranscriptView';
 import { ScoreCard } from './components/ScoreCard';
 import { CaseEditor } from './components/CaseEditor';
 import { Tooltip } from './components/Tooltip';
 import { Logo } from './components/Logo';
-import { Activity, BrainCircuit, Play, MessageSquare, ShieldCheck, UserCheck, CheckCircle, Edit3, HelpCircle } from 'lucide-react';
+import { Activity, BrainCircuit, Play, ShieldCheck, UserCheck, CheckCircle, Edit3, HelpCircle, Mail, Github, FileText } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { EvaluationResult, WorkOrderInput } from './types/quality_inspection';
 
@@ -246,15 +245,6 @@ function App() {
               input={customInput} 
               onChange={setCustomInput} 
             />
-            <div className="flex-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-0">
-              <div className="bg-slate-50 border-b border-gray-200 px-4 py-3 flex items-center gap-2 shrink-0">
-                <MessageSquare size={18} className="text-slate-600" />
-                <h3 className="font-bold text-slate-800">通话录音转写 (事实依据)</h3>
-              </div>
-              <div className="p-4 flex-1 min-h-0 overflow-hidden">
-                <TranscriptView content={getCurrentInput().transcript} />
-              </div>
-            </div>
         </div>
 
         {/* Right: AI Analysis Result */}
@@ -509,20 +499,43 @@ function App() {
           </div>
         </div>
       </main>
-      <footer className="bg-white border-t border-gray-200 py-3 shrink-0">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-          <div className="mb-2 md:mb-0">
-            <span className="font-bold text-gray-700">GovInsight-AI</span>
-            <span className="mx-2">|</span>
-            <span>于细微处，洞见政务未来</span>
-          </div>
+      <footer className="bg-white border-t border-gray-200 py-4 shrink-0 text-xs text-gray-500">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-3">
+          {/* Left: Copyright & Contact */}
           <div className="flex items-center gap-4">
-            <span>&copy; {new Date().getFullYear()} Huotao</span>
+             <span className="font-medium text-gray-600">&copy; {new Date().getFullYear()} Huotao.com</span>
+             <a href="mailto:mail@huotao.com" className="flex items-center gap-1.5 hover:text-blue-600 transition-colors">
+               <Mail size={14} />
+               <span>mail@huotao.com</span>
+             </a>
+          </div>
+
+          {/* Right: Links & Credit */}
+          <div className="flex items-center gap-4">
             <a 
+              href="https://github.com/HuoTaoCN/GovInsight-AI" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-gray-900 transition-colors"
+            >
+              <Github size={14} />
+              <span>GitHub</span>
+            </a>
+            <a 
+              href="https://github.com/HuoTaoCN/GovInsight-AI/blob/main/LICENSE" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-gray-900 transition-colors"
+            >
+              <FileText size={14} />
+              <span>MIT License</span>
+            </a>
+             <span className="text-gray-300">|</span>
+             <a 
               href="https://ai.huotao.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="hover:text-blue-600 transition-colors flex items-center gap-1"
+              className="hover:text-blue-600 transition-colors font-medium"
             >
               Powered by 见微 (AInsight)
             </a>
