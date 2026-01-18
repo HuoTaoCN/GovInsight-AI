@@ -335,6 +335,16 @@ The system provides an intuitive **Diff View**, highlighting the differences bet
 *   **Action**: High Confidence -> **Reject & Rewrite**.
 *   **Accountability**: System explicitly identifies malicious tampering and suggests accountability measures.
 
+#### Scenario 5: Incorrect Handling Type
+**Context**: A citizen reports illegal construction in a park, which requires on-site enforcement. To close the case quickly, the operator records it as a "Suggestion" and selects "Direct" (Direct Closure).
+**AI Detection Focus**:
+*   **Process Compliance**: AI identifies that "demolition of illegal construction" falls under administrative enforcement and strictly prohibits direct closure by the operator.
+*   **Loop Risk**: Points out that "Direct Closure" prevents the order from being dispatched to the Urban Management Department, resulting in an invalid order.
+**AI Verdict**:
+*   **Score**: 75 (Qualified, but with process flaws)
+*   **Action**: High Confidence -> **Mandatory Human Review**.
+*   **Revision**: Handling Type corrected to **"Dispatch"**, suggesting transfer to the Urban Management Bureau or Parks Bureau.
+
 ### System Architecture
 
 ```mermaid
