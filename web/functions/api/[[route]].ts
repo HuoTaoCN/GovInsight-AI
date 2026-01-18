@@ -4,6 +4,8 @@ import { OpenAI } from 'openai';
 
 const app = new Hono().basePath('/api');
 
+// Cloudflare Pages Functions - API Entry Point
+// Updated for V0.3.3 deployment check
 const SYSTEM_PROMPT = `# 角色定义
 你是一名为 12345 政务服务便民热线工作的**首席质检专家**。你的职责不是取代人工决策，而是通过可解释、可审计的方式，识别工单记录中的偏差、遗漏风险及治理隐患。
 
@@ -152,6 +154,10 @@ ${JSON.stringify(history_factors || {})}
 
     const content = completion.choices[0].message.content;
     
+    if (!content) {
+      throw new Error("No content received from LLM");
+    }
+
     const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim();
     const result = JSON.parse(jsonStr);
 
