@@ -82,6 +82,13 @@ app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
     // Ensure the model supports the file format (webm from MediaRecorder).
     console.log(`Streaming audio chunk (size: ${req.file.size}) to model: ${process.env.QWEN_REALTIME_MODEL}`);
 
+    // If file size is 0, it means the browser sent an empty chunk (common with some MediaRecorders on start)
+    if (req.file.size === 0) {
+      console.warn("Received empty audio chunk, skipping.");
+      fs.unlinkSync(filePath);
+      return res.json({ text: "" });
+    }
+
     const transcription = await client.audio.transcriptions.create({
       file: fs.createReadStream(filePath),
       model: process.env.QWEN_REALTIME_MODEL || "qwen3-tts-vd-realtime-2025-12-16",
