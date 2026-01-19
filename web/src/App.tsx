@@ -528,7 +528,7 @@ function App() {
               className="flex items-center gap-1.5 hover:text-gray-900 transition-colors"
             >
               <FileText size={14} />
-              <span>MIT License</span>
+              <span>GPL v3.0 License</span>
             </a>
              <span className="text-gray-300">|</span>
              <a 
