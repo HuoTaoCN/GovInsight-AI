@@ -156,28 +156,10 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
             <h3 className="font-bold text-purple-800">通话录音转写 (事实依据)</h3>
           </div>
           <div className="p-4 flex-1 h-full overflow-hidden flex flex-col">
-            {/* If TranscriptView is used for display, we need an editable version or toggle.
-                However, TranscriptView now supports upload. 
-                For manual editing, we might want to keep the textarea OR use a contentEditable div.
-                Let's stick to textarea for manual edits but add the upload buttons ABOVE it.
-            */}
             <TranscriptView 
               content={transcript} 
               onUpdate={handleTranscriptChange} 
             />
-            {/* Fallback manual editor if needed, or integrate into TranscriptView. 
-                TranscriptView currently renders formatted bubbles. 
-                Ideally, it should support 'Edit Mode' or we just place the buttons here.
-                Let's use TranscriptView as the main component since I updated it to include upload buttons.
-            */}
-            <div className="mt-2 pt-2 border-t border-gray-100">
-               <textarea
-                value={transcript}
-                onChange={(e) => handleTranscriptChange(e.target.value)}
-                className="w-full h-32 text-xs text-gray-500 bg-gray-50 p-2 rounded border border-gray-200 focus:border-purple-500 outline-none resize-none"
-                placeholder="手动编辑或修正转写内容..."
-              />
-            </div>
           </div>
         </div>
       </div>
