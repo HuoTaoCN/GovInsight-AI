@@ -187,6 +187,11 @@ app.post('/audio/transcribe', async (c) => {
 
     console.log(`Transcribing file: ${file.name} using model: ${c.env.QWEN_ASR_MODEL}`);
 
+    // Cloudflare Workers: File is a Blob, but OpenAI SDK expects a File with name or a ReadStream.
+    // In Workers environment, File object from FormData is usually compatible.
+    // However, some environments might need explicit conversion or buffer handling.
+    // Let's ensure we pass the file directly as it supports the Blob interface.
+    
     const transcription = await client.audio.transcriptions.create({
       file: file,
       model: c.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
@@ -196,6 +201,11 @@ app.post('/audio/transcribe', async (c) => {
 
   } catch (error) {
     console.error("Transcription Error:", error);
+    // Log detailed error for debugging
+    if (error instanceof Error) {
+        console.error("Error Message:", error.message);
+        console.error("Error Stack:", error.stack);
+    }
     return c.json({ error: "Transcription failed", details: String(error) }, 500);
   }
 });
@@ -210,10 +220,17 @@ app.post('/audio/stream', async (c) => {
       return c.json({ error: "No audio chunk" }, 400);
     }
 
+    // Check for empty file
+    if (audioBlob.size === 0) {
+        return c.json({ text: "" });
+    }
+
     const client = new OpenAI({
       apiKey: c.env.QWEN_API_KEY,
       baseURL: c.env.QWEN_BASE_URL,
     });
+
+    console.log(`Streaming audio chunk (size: ${audioBlob.size}) to model: ${c.env.QWEN_REALTIME_MODEL}`);
 
     const transcription = await client.audio.transcriptions.create({
       file: audioBlob,
@@ -224,7 +241,11 @@ app.post('/audio/stream', async (c) => {
 
   } catch (error) {
     console.error("Stream Transcription Error:", error);
-    return c.json({ error: "Stream processing failed" }, 500);
+    if (error instanceof Error) {
+        console.error("Error Message:", error.message);
+        console.error("Error Stack:", error.stack);
+    }
+    return c.json({ error: "Stream processing failed", details: String(error) }, 500);
   }
 });
 
