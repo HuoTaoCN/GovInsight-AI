@@ -1,6 +1,7 @@
 import React from 'react';
 import type { WorkOrderInput } from '../types/quality_inspection';
 import { User, Phone, FileText, MessageSquare, Edit3 } from 'lucide-react';
+import { TranscriptView } from './TranscriptView';
 
 interface CaseEditorProps {
   input: WorkOrderInput;
@@ -148,21 +149,35 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
           </div>
         </div>
 
-        {/* Transcript Editor */}
+        {/* Transcript Editor - Replaced with TranscriptView that supports Editing/Upload */}
         <div className="bg-white rounded-lg border border-purple-200 shadow-sm overflow-hidden ring-2 ring-purple-50 flex flex-col flex-1 min-h-[200px]">
           <div className="bg-purple-50 border-b border-purple-100 px-4 py-3 flex items-center gap-2 shrink-0">
             <MessageSquare size={18} className="text-purple-700" />
             <h3 className="font-bold text-purple-800">通话录音转写 (事实依据)</h3>
           </div>
-          <div className="p-4 flex-1 h-full">
-            <textarea
-              value={transcript}
-              onChange={(e) => handleTranscriptChange(e.target.value)}
-              className="w-full h-full text-sm leading-relaxed text-gray-700 p-4 bg-gray-50 rounded-lg border border-gray-200 font-mono focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none resize-none"
-              placeholder={`市民：你好，我想反映...
-话务员：请问具体位置是？
-市民：...`}
+          <div className="p-4 flex-1 h-full overflow-hidden flex flex-col">
+            {/* If TranscriptView is used for display, we need an editable version or toggle.
+                However, TranscriptView now supports upload. 
+                For manual editing, we might want to keep the textarea OR use a contentEditable div.
+                Let's stick to textarea for manual edits but add the upload buttons ABOVE it.
+            */}
+            <TranscriptView 
+              content={transcript} 
+              onUpdate={handleTranscriptChange} 
             />
+            {/* Fallback manual editor if needed, or integrate into TranscriptView. 
+                TranscriptView currently renders formatted bubbles. 
+                Ideally, it should support 'Edit Mode' or we just place the buttons here.
+                Let's use TranscriptView as the main component since I updated it to include upload buttons.
+            */}
+            <div className="mt-2 pt-2 border-t border-gray-100">
+               <textarea
+                value={transcript}
+                onChange={(e) => handleTranscriptChange(e.target.value)}
+                className="w-full h-32 text-xs text-gray-500 bg-gray-50 p-2 rounded border border-gray-200 focus:border-purple-500 outline-none resize-none"
+                placeholder="手动编辑或修正转写内容..."
+              />
+            </div>
           </div>
         </div>
       </div>

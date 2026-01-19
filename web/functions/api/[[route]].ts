@@ -169,4 +169,63 @@ ${JSON.stringify(history_factors || {})}
   }
 });
 
+// Audio Transcription Endpoint (Cloudflare Workers compatible)
+// Note: Workers don't use 'multer' or 'fs'. We parse FormData directly.
+app.post('/audio/transcribe', async (c) => {
+  try {
+    const formData = await c.req.formData();
+    const file = formData.get('file');
+
+    if (!file || !(file instanceof File)) {
+      return c.json({ error: "No file uploaded" }, 400);
+    }
+
+    const client = new OpenAI({
+      apiKey: c.env.QWEN_API_KEY,
+      baseURL: c.env.QWEN_BASE_URL,
+    });
+
+    console.log(`Transcribing file: ${file.name} using model: ${c.env.QWEN_ASR_MODEL}`);
+
+    const transcription = await client.audio.transcriptions.create({
+      file: file,
+      model: c.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
+    });
+
+    return c.json({ text: transcription.text });
+
+  } catch (error) {
+    console.error("Transcription Error:", error);
+    return c.json({ error: "Transcription failed", details: String(error) }, 500);
+  }
+});
+
+// Real-time Voice Input Endpoint (Short Chunk)
+app.post('/audio/stream', async (c) => {
+  try {
+    const formData = await c.req.formData();
+    const audioBlob = formData.get('audio');
+
+    if (!audioBlob || !(audioBlob instanceof File)) {
+      return c.json({ error: "No audio chunk" }, 400);
+    }
+
+    const client = new OpenAI({
+      apiKey: c.env.QWEN_API_KEY,
+      baseURL: c.env.QWEN_BASE_URL,
+    });
+
+    const transcription = await client.audio.transcriptions.create({
+      file: audioBlob,
+      model: c.env.QWEN_REALTIME_MODEL || "qwen3-tts-vd-realtime-2025-12-16",
+    });
+
+    return c.json({ text: transcription.text });
+
+  } catch (error) {
+    console.error("Stream Transcription Error:", error);
+    return c.json({ error: "Stream processing failed" }, 500);
+  }
+});
+
 export const onRequest = handle(app);

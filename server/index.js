@@ -1,6 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+const FormData = require('form-data');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
@@ -9,9 +14,85 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
+// Configure Multer for file uploads
+const upload = multer({ 
+  dest: 'uploads/',
+  limits: { fileSize: 25 * 1024 * 1024 } // 25MB limit
+});
+
 const client = new OpenAI({
   apiKey: process.env.QWEN_API_KEY,
   baseURL: process.env.QWEN_BASE_URL,
+});
+
+// Audio Transcription Endpoint (File Upload)
+// Uses model: qwen3-asr-flash-filetrans (as requested)
+app.post('/api/audio/transcribe', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+
+  try {
+    // 1. Prepare file for DashScope/OpenAI API
+    const filePath = req.file.path;
+    
+    // Note: DashScope's OpenAI compatible endpoint for audio usually requires a file stream
+    // We will try to use the OpenAI SDK first. If it fails with specific model names,
+    // we might need to fallback to axios or dashscope SDK.
+    // However, user specified a very specific model name: qwen3-asr-flash-filetrans
+    
+    console.log(`Transcribing file: ${req.file.originalname} using model: ${process.env.QWEN_ASR_MODEL}`);
+
+    const transcription = await client.audio.transcriptions.create({
+      file: fs.createReadStream(filePath),
+      model: process.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
+    });
+
+    console.log("Transcription result:", transcription.text);
+
+    // Cleanup uploaded file
+    fs.unlinkSync(filePath);
+
+    res.json({ text: transcription.text });
+
+  } catch (error) {
+    console.error("Transcription Error:", error);
+    // Cleanup on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ error: "Transcription failed", details: error.message });
+  }
+});
+
+// Real-time Voice Input Endpoint (Mocking "Realtime" via chunk upload for now)
+// User requested: qwen3-tts-vd-realtime-2025-12-16
+// Since standard HTTP isn't truly real-time streaming (WebSocket), 
+// we will implement this as a "Short Segment Transcription" for the "Live" effect.
+app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No audio chunk" });
+  }
+
+  try {
+    const filePath = req.file.path;
+    
+    // Using the user-specified "Realtime" model for this short chunk
+    const transcription = await client.audio.transcriptions.create({
+      file: fs.createReadStream(filePath),
+      model: process.env.QWEN_REALTIME_MODEL || "qwen3-tts-vd-realtime-2025-12-16",
+    });
+
+    fs.unlinkSync(filePath);
+    res.json({ text: transcription.text });
+
+  } catch (error) {
+    console.error("Stream Transcription Error:", error);
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ error: "Stream processing failed" });
+  }
 });
 
 const SYSTEM_PROMPT = `# 角色定义
