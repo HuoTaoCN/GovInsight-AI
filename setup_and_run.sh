@@ -63,6 +63,16 @@ if [ ! -f .env ]; then
     echo "Please update server/.env with your actual QWEN_API_KEY."
 fi
 
+# Sync QWEN_API_KEY to web/.dev.vars for Wrangler
+if [ -f .env ]; then
+    echo "Syncing QWEN_API_KEY to web/.dev.vars..."
+    # Extract QWEN_API_KEY from .env (handle optional quotes)
+    API_KEY=$(grep QWEN_API_KEY .env | cut -d '=' -f2- | tr -d '"' | tr -d "'")
+    if [ ! -z "$API_KEY" ]; then
+        echo "QWEN_API_KEY=$API_KEY" > ../web/.dev.vars
+    fi
+fi
+
 echo "Installing server dependencies..."
 npm install
 
@@ -85,8 +95,9 @@ WEB_PID=$!
 echo "Web client started with PID $WEB_PID"
 
 echo "=== Project is running ==="
-echo "Server: http://localhost:3000"
-echo "Web: http://localhost:5173 (usually)"
+echo "Backend (Express): http://localhost:3000"
+echo "Web (Vite + Express): http://localhost:5173"
+echo "Web (Cloudflare Preview): http://localhost:8788"
 echo "Press Ctrl+C to stop both processes."
 
 # Function to handle cleanup

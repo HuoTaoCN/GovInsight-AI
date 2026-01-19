@@ -8,6 +8,8 @@ runtime
 .env
 .env.*
 !.env.example
+.dev.vars
+.wrangler
 
 # OS files
 .DS_Store
