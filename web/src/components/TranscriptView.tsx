@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User, Headphones, Building2, Upload, Mic, MicOff, Loader2 } from 'lucide-react';
+import { User, Headphones, Building2, Upload, Mic, MicOff, Loader2, Edit2, Save } from 'lucide-react';
 
 interface TranscriptViewProps {
   content: string;
@@ -11,6 +11,9 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
   const lines = content.trim().split('\n').filter(line => line.trim() !== '');
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Edit Mode State
+  const [isEditing, setIsEditing] = useState(false);
+  
   // Audio Upload State
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -129,7 +132,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
         />
         <button 
           onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading || isRecording}
+          disabled={isUploading || isRecording || isEditing}
           className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50"
           title="上传音频文件"
         >
@@ -139,67 +142,92 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
         {/* Record Button */}
         <button
           onClick={isRecording ? stopRecording : startRecording}
-          disabled={isUploading}
+          disabled={isUploading || isEditing}
           className={`p-1.5 rounded transition-all flex items-center gap-1 ${
             isRecording 
               ? 'bg-red-100 text-red-600 hover:bg-red-200 animate-pulse' 
-              : 'text-gray-500 hover:text-red-600 hover:bg-red-50'
+              : 'text-gray-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-50'
           }`}
           title={isRecording ? "停止录音" : "开始实时录音"}
         >
           {isRecording ? <MicOff size={16} /> : <Mic size={16} />}
         </button>
+
+        {/* Edit Toggle Button */}
+        <button
+          onClick={() => setIsEditing(!isEditing)}
+          className={`p-1.5 rounded transition-all flex items-center gap-1 ${
+            isEditing
+              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+              : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+          }`}
+          title={isEditing ? "完成编辑" : "手动修改"}
+        >
+          {isEditing ? <Save size={16} /> : <Edit2 size={16} />}
+        </button>
       </div>
 
-      {/* Content Area - Editable */}
+      {/* Content Area - Switch between Preview and Edit Mode */}
       <div ref={scrollRef} className="space-y-4 font-mono text-sm flex-1 overflow-y-auto pr-2 pb-4">
-        {lines.length === 0 && (
-          <div className="text-gray-400 text-center py-8 text-xs italic">
-            暂无录音内容，请点击上方按钮上传或录制...
-          </div>
-        )}
-        
-        {/* Render formatted bubbles for preview */}
-        {lines.map((line, idx) => {
-          let role = 'unknown';
-          let text = line;
-          
-          if (line.startsWith('市民：')) {
-            role = 'citizen';
-            text = line.replace('市民：', '');
-          } else if (line.startsWith('话务员：')) {
-            role = 'agent';
-            text = line.replace('话务员：', '');
-          } else if (line.includes('：')) {
-            // Generic department handling
-            role = 'dept';
-          }
-
-          return (
-            <div key={idx} className="flex gap-3">
-              <div className="shrink-0 mt-0.5">
-                {role === 'citizen' && <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><User size={16} className="text-blue-600"/></div>}
-                {role === 'agent' && <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center"><Headphones size={16} className="text-purple-600"/></div>}
-                {role === 'dept' && <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center"><Building2 size={16} className="text-orange-600"/></div>}
-                {role === 'unknown' && <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center"><span className="text-xs text-gray-500">?</span></div>}
-              </div>
-              <div className="flex-1">
-                <p className="text-gray-800 leading-relaxed">{text}</p>
-                {role !== 'unknown' && <span className="text-xs text-gray-400 block mt-1">{line.split('：')[0]}</span>}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Manual Edit Area (Always visible at bottom for appending/editing) */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
+        {isEditing ? (
+          /* Edit Mode: Full Textarea */
           <textarea
             value={content}
             onChange={(e) => onUpdate && onUpdate(e.target.value)}
-            className="w-full h-32 text-sm leading-relaxed text-gray-700 p-3 bg-gray-50 rounded border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-y font-mono"
-            placeholder="在此处手动编辑全文，或粘贴录音文本..."
+            className="w-full h-full min-h-[300px] text-sm leading-relaxed text-gray-700 p-3 bg-white rounded border border-blue-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none font-mono shadow-inner"
+            placeholder="在此处手动编辑全文..."
+            autoFocus
           />
-        </div>
+        ) : (
+          /* Preview Mode: Formatted Bubbles */
+          <>
+            {lines.length === 0 && (
+              <div 
+                className="text-gray-400 text-center py-8 text-xs italic cursor-pointer hover:text-blue-500 transition-colors"
+                onClick={() => setIsEditing(true)}
+              >
+                暂无录音内容，点击此处或上方按钮开始编辑...
+              </div>
+            )}
+            
+            <div 
+              className="space-y-4 cursor-text"
+              onClick={() => setIsEditing(true)} // Click anywhere on bubbles to edit
+              title="点击任意位置进行修改"
+            >
+              {lines.map((line, idx) => {
+                let role = 'unknown';
+                let text = line;
+                
+                if (line.startsWith('市民：')) {
+                  role = 'citizen';
+                  text = line.replace('市民：', '');
+                } else if (line.startsWith('话务员：')) {
+                  role = 'agent';
+                  text = line.replace('话务员：', '');
+                } else if (line.includes('：')) {
+                  // Generic department handling
+                  role = 'dept';
+                }
+
+                return (
+                  <div key={idx} className="flex gap-3 group">
+                    <div className="shrink-0 mt-0.5">
+                      {role === 'citizen' && <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><User size={16} className="text-blue-600"/></div>}
+                      {role === 'agent' && <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center"><Headphones size={16} className="text-purple-600"/></div>}
+                      {role === 'dept' && <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center"><Building2 size={16} className="text-orange-600"/></div>}
+                      {role === 'unknown' && <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center"><span className="text-xs text-gray-500">?</span></div>}
+                    </div>
+                    <div className="flex-1 group-hover:bg-gray-50 rounded -ml-2 pl-2 py-1 transition-colors">
+                      <p className="text-gray-800 leading-relaxed">{text}</p>
+                      {role !== 'unknown' && <span className="text-xs text-gray-400 block mt-1">{line.split('：')[0]}</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
