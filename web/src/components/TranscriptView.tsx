@@ -45,6 +45,8 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
         // Append new transcription to existing content
         const newText = content ? `${content}\n\n[上传录音转写]\n${data.text}` : data.text;
         onUpdate(newText);
+        // Auto-switch to edit mode to see the result clearly
+        setIsEditing(true);
       }
     } catch (error) {
       console.error('Transcription error:', error);
@@ -60,7 +62,8 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      // Use webm/opus as it is widely supported and compact
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -69,6 +72,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
       };
 
       mediaRecorder.onstop = async () => {
+        // Create blob with explicit type
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
         await sendAudioChunk(audioBlob);
         
@@ -94,6 +98,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
   const sendAudioChunk = async (blob: Blob) => {
     setIsUploading(true); // Reuse uploading spinner for processing
     const formData = new FormData();
+    // Ensure filename ends with .webm so backend/multer/dashscope can recognize it
     formData.append('audio', blob, 'recording.webm');
 
     try {
@@ -109,9 +114,12 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
         // Append new transcription to the end of existing content
         const newText = content ? `${content}\n${data.text}` : data.text;
         onUpdate(newText);
+        // Auto-switch to edit mode to see the result
+        setIsEditing(true);
       }
     } catch (error) {
       console.error('Stream processing error:', error);
+      alert('实时语音转写失败，请检查控制台日志');
     } finally {
       setIsUploading(false);
     }
@@ -128,7 +136,8 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
           type="file" 
           ref={fileInputRef} 
           onChange={handleFileUpload} 
-          accept="audio/*" 
+          // Explicitly accept common audio formats
+          accept="audio/wav,audio/mp3,audio/mpeg,audio/webm,audio/m4a" 
           className="hidden" 
         />
         <button 
