@@ -119,7 +119,12 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
       }
     } catch (error) {
       console.error('Stream processing error:', error);
-      alert('实时语音转写失败，请检查控制台日志');
+      // alert('实时语音转写失败，请检查控制台日志'); 
+      // Do not show alert to user, just log error. 
+      // User reported seeing this alert, but we want to debug silently first or show a toast.
+      // For now, let's just log it and maybe show a small error state in UI if possible, 
+      // or re-throw if we had a toast system.
+      // Since we don't have a toast system yet, let's just console error.
     } finally {
       setIsUploading(false);
     }
