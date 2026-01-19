@@ -106,6 +106,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
 
       const data = await response.json();
       if (onUpdate && data.text) {
+        // Append new transcription to the end of existing content
         const newText = content ? `${content}\n${data.text}` : data.text;
         onUpdate(newText);
       }
