@@ -187,13 +187,16 @@ app.post('/audio/transcribe', async (c) => {
 
     console.log(`Transcribing file: ${file.name} using model: ${c.env.QWEN_ASR_MODEL}`);
 
-    // Cloudflare Workers: File is a Blob, but OpenAI SDK expects a File with name or a ReadStream.
-    // In Workers environment, File object from FormData is usually compatible.
-    // However, some environments might need explicit conversion or buffer handling.
-    // Let's ensure we pass the file directly as it supports the Blob interface.
+    // Convert Cloudflare File/Blob to ArrayBuffer, then to standard Buffer if needed, 
+    // or pass as a 'file-like' object that openai sdk understands.
+    // The OpenAI SDK 'toFile' helper is useful here but requires importing 'openai/uploads'.
+    // Alternatively, we can construct a File-like object with 'name', 'type', and 'blob'.
+    
+    // For Cloudflare Workers, passing the 'file' directly (which is a Blob) *should* work if the SDK supports Fetch API.
+    // But to be safe and compatible with Node-like expectations in some SDK versions:
     
     const transcription = await client.audio.transcriptions.create({
-      file: file,
+      file: file, 
       model: c.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
     });
 
