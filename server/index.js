@@ -78,20 +78,31 @@ app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
     const filePath = req.file.path;
     
     // Using the user-specified "Realtime" model for this short chunk
+    // Note: 'client.audio.transcriptions.create' handles multipart/form-data for files.
+    // Ensure the model supports the file format (webm from MediaRecorder).
+    console.log(`Streaming audio chunk (size: ${req.file.size}) to model: ${process.env.QWEN_REALTIME_MODEL}`);
+
     const transcription = await client.audio.transcriptions.create({
       file: fs.createReadStream(filePath),
       model: process.env.QWEN_REALTIME_MODEL || "qwen3-tts-vd-realtime-2025-12-16",
     });
+
+    console.log("Stream result:", transcription.text);
 
     fs.unlinkSync(filePath);
     res.json({ text: transcription.text });
 
   } catch (error) {
     console.error("Stream Transcription Error:", error);
+    // Log detailed error from OpenAI SDK
+    if (error.response) {
+       console.error("OpenAI SDK Response Data:", error.response.data);
+    }
+    
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
-    res.status(500).json({ error: "Stream processing failed" });
+    res.status(500).json({ error: "Stream processing failed", details: error.message });
   }
 });
 
