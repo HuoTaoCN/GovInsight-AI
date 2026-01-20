@@ -36,12 +36,18 @@ export function ReadmeModal({ isOpen, onClose }: ReadmeModalProps) {
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           <article className="prose prose-slate prose-sm sm:prose-base max-w-none 
-            prose-headings:font-bold prose-headings:text-gray-800 
+            prose-headings:font-bold prose-headings:text-gray-800 prose-h1:text-2xl prose-h2:text-xl
             prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
             prose-pre:bg-gray-800 prose-pre:text-gray-50
             prose-code:text-pink-600 prose-code:bg-gray-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
             prose-img:rounded-lg prose-img:shadow-md
-            [&_div[align='center']]:text-center [&_div[align='center']_img]:mx-auto
+            
+            /* Fix for centered badges/images in README */
+            [&_div[align='center']]:text-center 
+            [&_div[align='center']_img]:inline-block 
+            [&_div[align='center']_img]:mx-1 
+            [&_div[align='center']_img]:my-0
+            [&_div[align='center']_p]:my-2
           ">
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}

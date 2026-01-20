@@ -206,21 +206,35 @@ app.post('/audio/transcribe', async (c) => {
     // DEBUG LOG
     console.log(`[Transcribe] Base URL: ${c.env.QWEN_BASE_URL}, Model: ${c.env.QWEN_ASR_MODEL}`);
 
-    const client = new OpenAI({
-      apiKey: c.env.QWEN_API_KEY,
-      baseURL: c.env.QWEN_BASE_URL,
-      // In Cloudflare Workers, we might need to set a custom fetch to avoid some node-specific issues?
-      // But usually default is fine.
+    // Use Native DashScope API for File Transcription (Short audio)
+    // For long audio, we should use Task API, but for simplicity here we assume <60s or use recognition API.
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const url = "https://dashscope.aliyuncs.com/api/v1/services/audio/asr/recognition";
+    
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${c.env.QWEN_API_KEY}`,
+            "Content-Type": "application/octet-stream",
+            "X-DashScope-Data-Type": "audio",
+            "X-DashScope-Asr-Model": c.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
+            "X-DashScope-Asr-Format": "wav", 
+            "X-DashScope-Asr-Sample-Rate": "16000"
+        },
+        body: arrayBuffer
     });
 
-    console.log(`Transcribing file: ${file.name} using model: ${c.env.QWEN_ASR_MODEL}`);
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error("DashScope API Error (File):", response.status, errorText);
+        throw new Error(`DashScope API failed: ${response.status} ${errorText}`);
+    }
 
-    const transcription = await client.audio.transcriptions.create({
-      file: file, 
-      model: c.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
-    });
+    const result = await response.json() as any;
+    const text = result.output?.sentences?.[0]?.text || result.output?.text || "";
 
-    return c.json({ text: transcription.text });
+    return c.json({ text: text });
 
   } catch (error) {
     console.error("Transcription Error:", error);
@@ -247,19 +261,48 @@ app.post('/audio/stream', async (c) => {
     // DEBUG LOG
     console.log(`[Stream] Base URL: ${c.env.QWEN_BASE_URL}, Model: ${c.env.QWEN_REALTIME_MODEL}`);
 
-    const client = new OpenAI({
-      apiKey: c.env.QWEN_API_KEY,
-      baseURL: c.env.QWEN_BASE_URL,
+    // Use Native DashScope API for ASR (OpenAI SDK might not support the specific ASR endpoint path)
+    // Docs: https://help.aliyun.com/zh/model-studio/developer-reference/use-qwen-audio-api-via-http
+    
+    // Convert Blob/File to ArrayBuffer
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    
+    // DashScope Native API URL
+    const url = "https://dashscope.aliyuncs.com/api/v1/services/audio/asr/recognition";
+    
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${c.env.QWEN_API_KEY}`,
+            "Content-Type": "application/octet-stream",
+            "X-DashScope-Data-Type": "audio",
+            "X-DashScope-Asr-Model": c.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-2025-09-08",
+            "X-DashScope-Asr-Format": "wav", // Assuming frontend sends wav/webm, DashScope usually auto-detects or defaults to pcm/wav
+            "X-DashScope-Asr-Sample-Rate": "16000"
+        },
+        body: arrayBuffer
     });
 
-    console.log(`Streaming audio chunk (size: ${audioBlob.size}) to model: ${c.env.QWEN_REALTIME_MODEL}`);
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error("DashScope API Error:", response.status, errorText);
+        throw new Error(`DashScope API failed: ${response.status} ${errorText}`);
+    }
 
-    const transcription = await client.audio.transcriptions.create({
-      file: audioBlob,
-      model: c.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-2025-09-08",
-    });
-
-    return c.json({ text: transcription.text });
+    const result = await response.json() as any;
+    
+    // DashScope response structure:
+    // {
+    //   "output": {
+    //     "sentences": [ { "text": "..." } ]
+    //   },
+    //   "usage": ...
+    // }
+    // Or sometimes just "output": { "text": "..." } depending on model
+    
+    const text = result.output?.sentences?.[0]?.text || result.output?.text || "";
+    
+    return c.json({ text: text });
 
   } catch (error) {
     console.error("Stream Transcription Error:", error);
