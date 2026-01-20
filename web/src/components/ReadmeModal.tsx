@@ -1,6 +1,8 @@
 import { X, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
 import readmeContent from '../../../README.md?raw';
 
 interface ReadmeModalProps {
@@ -39,8 +41,12 @@ export function ReadmeModal({ isOpen, onClose }: ReadmeModalProps) {
             prose-pre:bg-gray-800 prose-pre:text-gray-50
             prose-code:text-pink-600 prose-code:bg-gray-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
             prose-img:rounded-lg prose-img:shadow-md
+            [&_div[align='center']]:text-center [&_div[align='center']_img]:mx-auto
           ">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw, rehypeSlug]}
+            >
               {readmeContent}
             </ReactMarkdown>
           </article>
