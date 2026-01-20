@@ -169,8 +169,31 @@ ${JSON.stringify(history_factors || {})}
   }
 });
 
-// Audio Transcription Endpoint (Cloudflare Workers compatible)
-// Note: Workers don't use 'multer' or 'fs'. We parse FormData directly.
+// Note: DashScope might require specific handling for file uploads via OpenAI SDK compatibility layer.
+// Sometimes base_url needs to be correct for Audio.
+// DashScope OpenAI Compatible Base URL for Audio is usually: 
+// https://dashscope.aliyuncs.com/compatible-mode/v1 
+// (which is what we set in wrangler.toml)
+
+// HOWEVER, DashScope might strictly require 'model' parameter to be one of the supported ones.
+// And error 404 on "Network connection lost" usually implies the SDK is trying to hit an endpoint that doesn't exist 
+// OR the base URL + path is wrong.
+
+// Standard OpenAI Audio Path: POST /audio/transcriptions
+// DashScope Compatible Path: POST /compatible-mode/v1/audio/transcriptions
+
+// If the error is 404, it might be that the SDK is constructing a URL that DashScope doesn't like.
+// Let's try to use 'fetch' directly to have full control, mimicking what we did in Node.js test scripts.
+
+// But wait, the previous node script used `client.audio.transcriptions.create` and it worked for `qwen3-asr-flash-2025-09-08`.
+// The issue might be that Cloudflare Workers `File` object needs to be handled carefully when passed to OpenAI SDK.
+// The SDK expects a `File` or `ReadStream`. In Workers, `File` is standard Web API File.
+
+// Let's try to enforce the correct endpoint construction or fallback to raw fetch if SDK fails.
+// Actually, 404 usually means the URL is wrong.
+// Maybe c.env.QWEN_BASE_URL is missing or wrong in the deployed environment?
+// We should log the base URL to debug.
+
 app.post('/audio/transcribe', async (c) => {
   try {
     const formData = await c.req.formData();
@@ -180,21 +203,18 @@ app.post('/audio/transcribe', async (c) => {
       return c.json({ error: "No file uploaded" }, 400);
     }
 
+    // DEBUG LOG
+    console.log(`[Transcribe] Base URL: ${c.env.QWEN_BASE_URL}, Model: ${c.env.QWEN_ASR_MODEL}`);
+
     const client = new OpenAI({
       apiKey: c.env.QWEN_API_KEY,
       baseURL: c.env.QWEN_BASE_URL,
+      // In Cloudflare Workers, we might need to set a custom fetch to avoid some node-specific issues?
+      // But usually default is fine.
     });
 
     console.log(`Transcribing file: ${file.name} using model: ${c.env.QWEN_ASR_MODEL}`);
 
-    // Convert Cloudflare File/Blob to ArrayBuffer, then to standard Buffer if needed, 
-    // or pass as a 'file-like' object that openai sdk understands.
-    // The OpenAI SDK 'toFile' helper is useful here but requires importing 'openai/uploads'.
-    // Alternatively, we can construct a File-like object with 'name', 'type', and 'blob'.
-    
-    // For Cloudflare Workers, passing the 'file' directly (which is a Blob) *should* work if the SDK supports Fetch API.
-    // But to be safe and compatible with Node-like expectations in some SDK versions:
-    
     const transcription = await client.audio.transcriptions.create({
       file: file, 
       model: c.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
@@ -204,11 +224,7 @@ app.post('/audio/transcribe', async (c) => {
 
   } catch (error) {
     console.error("Transcription Error:", error);
-    // Log detailed error for debugging
-    if (error instanceof Error) {
-        console.error("Error Message:", error.message);
-        console.error("Error Stack:", error.stack);
-    }
+    // ...
     return c.json({ error: "Transcription failed", details: String(error) }, 500);
   }
 });
@@ -228,6 +244,9 @@ app.post('/audio/stream', async (c) => {
         return c.json({ text: "" });
     }
 
+    // DEBUG LOG
+    console.log(`[Stream] Base URL: ${c.env.QWEN_BASE_URL}, Model: ${c.env.QWEN_REALTIME_MODEL}`);
+
     const client = new OpenAI({
       apiKey: c.env.QWEN_API_KEY,
       baseURL: c.env.QWEN_BASE_URL,
@@ -244,10 +263,7 @@ app.post('/audio/stream', async (c) => {
 
   } catch (error) {
     console.error("Stream Transcription Error:", error);
-    if (error instanceof Error) {
-        console.error("Error Message:", error.message);
-        console.error("Error Stack:", error.stack);
-    }
+    // ...
     return c.json({ error: "Stream processing failed", details: String(error) }, 500);
   }
 });
