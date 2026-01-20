@@ -4,7 +4,7 @@
 
 **Intelligent Quality Inspection System for Government Service Hotline Work Orders**
 
-[![Version](https://img.shields.io/badge/Version-V0.3.2-orange?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-V0.4.0-orange?style=flat-square)](CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![React](https://img.shields.io/badge/React-v19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-43853D?style=flat-square&logo=node.js&logoColor=white)
@@ -238,9 +238,10 @@ npm run dev
 *   [x] **V0.3**: UI 重构、条件式修正生成、Mock 演示模式
     *   *V0.3.2 (Latest)*: 一键自动化部署脚本、模型配置化、Node.js 运行时自动管理。
     *   *V0.3.1*: Dashboard 布局重构、评分标准 Tooltip、新 Logo 设计。
-*   [ ] **V0.4**: 检查工单直接办结与转办逻辑（Direct vs Dispatch）
-*   [ ] **V0.5**: 增加语音实时录入、音频上传转文字功能
-*   [ ] **V0.6**: 生成工单质检报告
+*   [x] **V0.4**: 检查工单直接办结与转办逻辑（Direct vs Dispatch）
+*   [ ] **V0.5**: 批量质检的调用和返回接口
+*   [ ] **V0.6**: 增加语音实时录入、音频上传转文字功能
+*   [ ] **V0.7**: 生成工单质检报告
 *   [ ] **V1.0**: 完整的仪表盘 (Dashboard) 与多租户支持
 
 ## 📄 许可证

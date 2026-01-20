@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [V0.4.0] - 2026-01-20
+
+### 🚀 New Features (新特性)
+- **Smart Dispatch Logic**: 实现了对“直接办结 (Direct)”与“转办 (Dispatch)”的智能逻辑检查。系统现在能识别话务员是否将复杂的投诉或求助错误地归类为直接办结，并进行风险标记。
+- **Real-time Voice Input**: 
+  - 集成实时录音与转写功能，支持直接在前端录入市民诉求。
+  - 增加音频文件上传转文字功能，方便批量处理历史录音。
+- **Enhanced ASR Integration**: 
+  - 对接阿里云 DashScope (Qwen Audio) API。
+  - 针对实时和文件场景分别优化了模型配置 (`qwen3-asr-flash-2025-09-08` / `qwen3-asr-flash-filetrans`)。
+
+### 🛠️ Infrastructure
+- **Server Keep-alive**: 优化了后端服务稳定性，增加了进程保活机制。
+- **DevEx**: 改进了开发环境配置，支持自动端口检测与代理配置。
+
 ## [V0.3.2] - 2026-01-16
 
 ### 🛠️ Infrastructure & DevEx (基础设施与开发体验)

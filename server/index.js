@@ -11,6 +11,11 @@ require('dotenv').config();
 const app = express();
 const port = 3000;
 
+// Ensure uploads directory exists
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
 app.use(cors());
 app.use(express.json());
 
@@ -34,7 +39,14 @@ app.post('/api/audio/transcribe', upload.single('file'), async (req, res) => {
 
   try {
     // 1. Prepare file for DashScope/OpenAI API
-    const filePath = req.file.path;
+    // Rename file to include original extension to help API identify format
+    let filePath = req.file.path;
+    const originalExt = path.extname(req.file.originalname);
+    if (originalExt) {
+        const newPath = filePath + originalExt;
+        fs.renameSync(filePath, newPath);
+        filePath = newPath;
+    }
     
     // Note: DashScope's OpenAI compatible endpoint for audio usually requires a file stream
     // We will try to use the OpenAI SDK first. If it fails with specific model names,
@@ -75,7 +87,15 @@ app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
   }
 
   try {
-    const filePath = req.file.path;
+    let filePath = req.file.path;
+    // Add extension for stream chunks (usually .webm from frontend)
+    // The frontend sends filename='recording.webm' so originalname has extension
+    const originalExt = path.extname(req.file.originalname);
+    if (originalExt) {
+        const newPath = filePath + originalExt;
+        fs.renameSync(filePath, newPath);
+        filePath = newPath;
+    }
     
     // Using the user-specified "Realtime" model for this short chunk
     // Note: 'client.audio.transcriptions.create' handles multipart/form-data for files.
@@ -89,15 +109,28 @@ app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
       return res.json({ text: "" });
     }
 
-    const transcription = await client.audio.transcriptions.create({
-      file: fs.createReadStream(filePath),
-      model: process.env.QWEN_REALTIME_MODEL || "qwen3-tts-vd-realtime-2025-12-16",
-    });
+    try {
+        const transcription = await client.audio.transcriptions.create({
+          file: fs.createReadStream(filePath),
+          model: process.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-2025-09-08",
+        });
 
-    console.log("Stream result:", transcription.text);
-
-    fs.unlinkSync(filePath);
-    res.json({ text: transcription.text });
+        console.log("Stream result:", transcription.text);
+        fs.unlinkSync(filePath);
+        res.json({ text: transcription.text });
+    } catch (apiError) {
+        // Detailed error logging for OpenAI SDK errors
+        console.error("OpenAI/DashScope API Error Details:");
+        if (apiError.response) {
+            console.error("- Status:", apiError.response.status);
+            console.error("- Headers:", JSON.stringify(apiError.response.headers));
+            console.error("- Data:", JSON.stringify(apiError.response.data));
+        } else {
+            console.error("- Message:", apiError.message);
+            console.error("- Stack:", apiError.stack);
+        }
+        throw apiError; // Re-throw to be caught by outer catch block for cleanup
+    }
 
   } catch (error) {
     console.error("Stream Transcription Error:", error);
@@ -107,7 +140,7 @@ app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
     }
     
     if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+      try { fs.unlinkSync(req.file.path); } catch (e) {}
     }
     res.status(500).json({ error: "Stream processing failed", details: error.message });
   }
@@ -268,6 +301,16 @@ ${JSON.stringify(history_factors || {})}
   }
 });
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 app.listen(port, () => {
   console.log(`Backend server running at http://localhost:${port}`);
+  // Keep alive
+  setInterval(() => {}, 10000);
 });

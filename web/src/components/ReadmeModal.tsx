@@ -1,0 +1,62 @@
+import { X, FileText } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+// @ts-expect-error import raw file
+import readmeContent from '../../../README.md?raw';
+
+interface ReadmeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function ReadmeModal({ isOpen, onClose }: ReadmeModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+      <div 
+        className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b shrink-0">
+          <div className="flex items-center gap-2 text-gray-800">
+            <FileText className="text-blue-600" />
+            <h2 className="text-lg font-bold">项目文档 (README)</h2>
+          </div>
+          <button 
+            onClick={onClose}
+            className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <article className="prose prose-slate prose-sm sm:prose-base max-w-none 
+            prose-headings:font-bold prose-headings:text-gray-800 
+            prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+            prose-pre:bg-gray-800 prose-pre:text-gray-50
+            prose-code:text-pink-600 prose-code:bg-gray-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+            prose-img:rounded-lg prose-img:shadow-md
+          ">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {readmeContent}
+            </ReactMarkdown>
+          </article>
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end shrink-0">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors text-gray-700"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

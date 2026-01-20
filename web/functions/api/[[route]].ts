@@ -237,7 +237,7 @@ app.post('/audio/stream', async (c) => {
 
     const transcription = await client.audio.transcriptions.create({
       file: audioBlob,
-      model: c.env.QWEN_REALTIME_MODEL || "qwen3-tts-vd-realtime-2025-12-16",
+      model: c.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-2025-09-08",
     });
 
     return c.json({ text: transcription.text });

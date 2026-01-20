@@ -9,6 +9,10 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
+    fs: {
+      // Allow serving files from one level up to the project root
+      allow: ['..'],
+    },
     proxy: {
       '/api': {
         // 本地开发时代理到 Express 后端 (Port 3000)

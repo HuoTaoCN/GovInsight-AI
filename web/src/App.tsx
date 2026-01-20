@@ -36,6 +36,8 @@ const INITIAL_CUSTOM_INPUT: WorkOrderInput = {
 
 import { RevisionView } from './components/RevisionView';
 
+import { ReadmeModal } from './components/ReadmeModal';
+
 function App() {
   const [selectedCaseId, setSelectedCaseId] = useState<string>(MOCK_CASES[0].id);
   const [customInput, setCustomInput] = useState<WorkOrderInput>(INITIAL_CUSTOM_INPUT);
@@ -43,6 +45,7 @@ function App() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<EvaluationResult | null>(null);
+  const [isReadmeOpen, setIsReadmeOpen] = useState(false);
 
   const isCustomMode = true; // Always enable editing mode
 
@@ -176,7 +179,7 @@ function App() {
           <div className="flex items-center gap-3">
             <Logo className="text-blue-400" />
             <div>
-              <h1 className="text-xl font-bold tracking-tight">GovInsight-AI 热线工单质量智能检测系统 <span className="text-xs font-normal text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded ml-2">V0.3.3</span></h1>
+              <h1 className="text-xl font-bold tracking-tight">GovInsight-AI 热线工单质量智能检测系统 <span className="text-xs font-normal text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded ml-2">V0.4.0</span></h1>
               <p className="text-xs text-slate-400">Intelligent Quality Inspection System for Government Service Hotline Work Orders</p>
             </div>
           </div>
@@ -512,6 +515,13 @@ function App() {
 
           {/* Right: Links & Credit */}
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsReadmeOpen(true)}
+              className="flex items-center gap-1.5 hover:text-gray-900 transition-colors"
+            >
+              <FileText size={14} />
+              <span>项目文档 (README)</span>
+            </button>
             <a 
               href="https://github.com/HuoTaoCN/GovInsight-AI" 
               target="_blank" 
@@ -542,6 +552,11 @@ function App() {
           </div>
         </div>
       </footer>
+
+      <ReadmeModal 
+        isOpen={isReadmeOpen} 
+        onClose={() => setIsReadmeOpen(false)} 
+      />
     </div>
   );
 }

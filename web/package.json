@@ -1,23 +1,26 @@
 {
   "name": "web",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "dev": "wrangler pages dev -- vite",
+    "dev": "wrangler pages dev --proxy 5173 -- vite --port 5173",
     "build": "tsc -b && vite build",
     "deploy": "npm run build && npx wrangler pages deploy dist",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "clsx": "^2.1.1",
     "hono": "^4.11.4",
     "lucide-react": "^0.562.0",
     "openai": "^6.16.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
