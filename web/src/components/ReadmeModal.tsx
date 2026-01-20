@@ -1,7 +1,6 @@
 import { X, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-// @ts-expect-error import raw file
 import readmeContent from '../../../README.md?raw';
 
 interface ReadmeModalProps {
