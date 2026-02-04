@@ -39,7 +39,7 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
   };
 
   return (
-    <div className="flex flex-col h-full gap-3 overflow-hidden">
+    <div className="flex flex-col lg:h-full h-auto gap-3 lg:overflow-hidden">
       {/* Title Header - Fixed */}
       <div className="flex items-center gap-2 shrink-0">
         <Edit3 size={18} className="text-gray-600" />
@@ -47,7 +47,7 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto min-h-0 pr-1 space-y-3 flex flex-col">
+      <div className="flex-1 lg:overflow-y-auto overflow-visible min-h-0 lg:pr-1 space-y-3 flex flex-col">
         {/* Work Order Form Editor */}
         <div className="bg-white rounded-lg border border-blue-200 shadow-sm overflow-hidden ring-2 ring-blue-50 shrink-0">
           <div className="bg-blue-50 border-b border-blue-100 px-3 py-2">
@@ -69,7 +69,7 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
                 <div className="flex gap-1">
                   <select
                     value={form_data.priority}
-                    onChange={(e) => handleFormChange('priority', e.target.value as any)}
+                    onChange={(e) => handleFormChange('priority', e.target.value as 'Normal' | 'Urgent' | 'Emergency')}
                     className="px-2 py-1 text-xs rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors"
                   >
                     <option value="Normal">普通</option>
@@ -78,7 +78,7 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
                   </select>
                   <select
                     value={form_data.handling_type || 'Dispatch'}
-                    onChange={(e) => handleFormChange('handling_type', e.target.value as any)}
+                    onChange={(e) => handleFormChange('handling_type', e.target.value as 'Direct' | 'Dispatch')}
                     className="px-2 py-1 text-xs rounded border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors"
                   >
                     <option value="Dispatch">转办</option>
@@ -150,12 +150,12 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
         </div>
 
         {/* Transcript Editor - Replaced with TranscriptView that supports Editing/Upload */}
-        <div className="bg-white rounded-lg border border-purple-200 shadow-sm overflow-hidden ring-2 ring-purple-50 flex flex-col flex-1 min-h-[200px]">
+        <div className="bg-white rounded-lg border border-purple-200 shadow-sm overflow-hidden ring-2 ring-purple-50 flex flex-col lg:flex-1 h-auto min-h-[300px]">
           <div className="bg-purple-50 border-b border-purple-100 px-4 py-3 flex items-center gap-2 shrink-0">
             <MessageSquare size={18} className="text-purple-700" />
             <h3 className="font-bold text-purple-800">通话录音转写 (事实依据)</h3>
           </div>
-          <div className="p-4 flex-1 h-full overflow-hidden flex flex-col">
+          <div className="p-4 lg:flex-1 lg:h-full h-auto lg:overflow-hidden flex flex-col">
             <TranscriptView 
               content={transcript} 
               onUpdate={handleTranscriptChange} 

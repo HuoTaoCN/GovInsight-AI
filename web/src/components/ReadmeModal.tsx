@@ -48,6 +48,7 @@ export function ReadmeModal({ isOpen, onClose }: ReadmeModalProps) {
             [&_div[align='center']_img]:mx-1 
             [&_div[align='center']_img]:my-0
             [&_div[align='center']_p]:my-2
+            /* Add this to force br to work or just rely on inline-block natural wrapping */
           ">
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}

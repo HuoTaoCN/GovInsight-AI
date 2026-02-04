@@ -231,7 +231,7 @@ app.post('/audio/transcribe', async (c) => {
         throw new Error(`DashScope API failed: ${response.status} ${errorText}`);
     }
 
-    const result = await response.json() as any;
+    const result = await response.json() as { output?: { sentences?: { text: string }[], text?: string } };
     const text = result.output?.sentences?.[0]?.text || result.output?.text || "";
 
     return c.json({ text: text });
@@ -289,7 +289,7 @@ app.post('/audio/stream', async (c) => {
         throw new Error(`DashScope API failed: ${response.status} ${errorText}`);
     }
 
-    const result = await response.json() as any;
+    const result = await response.json() as { output?: { sentences?: { text: string }[], text?: string } };
     
     // DashScope response structure:
     // {

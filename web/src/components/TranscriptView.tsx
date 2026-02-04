@@ -131,7 +131,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="lg:h-full h-auto flex flex-col">
       {/* Toolbar */}
       <div className="flex items-center gap-2 mb-2 px-1">
         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex-1">通话录音转写</h3>
@@ -183,13 +183,13 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ content, onUpdat
       </div>
 
       {/* Content Area - Switch between Preview and Edit Mode */}
-      <div ref={scrollRef} className="space-y-4 font-mono text-sm flex-1 overflow-y-auto pr-2 pb-4">
+      <div ref={scrollRef} className="space-y-4 font-mono text-sm lg:flex-1 lg:overflow-y-auto overflow-visible pr-2 pb-4">
         {isEditing ? (
           /* Edit Mode: Full Textarea */
           <textarea
             value={content}
             onChange={(e) => onUpdate && onUpdate(e.target.value)}
-            className="w-full h-full min-h-[300px] text-sm leading-relaxed text-gray-700 p-3 bg-white rounded border border-blue-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none font-mono shadow-inner"
+            className="w-full lg:h-full h-auto min-h-[300px] text-sm leading-relaxed text-gray-700 p-3 bg-white rounded border border-blue-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none font-mono shadow-inner"
             placeholder="在此处手动编辑全文..."
             autoFocus
           />
