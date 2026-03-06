@@ -75,7 +75,8 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error('Analysis failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
@@ -92,7 +93,7 @@ function App() {
         setAnalysisResult(null); // Ensure displayResult falls back to mock
         setShowResult(true);
       } else {
-        alert("AI 分析失败，请检查后端服务是否启动。");
+        alert(`AI 分析失败: ${error instanceof Error ? error.message : "未知错误"}。请检查后端服务配置（API Key / 模型名称）。`);
       }
     } finally {
       setIsAnalyzing(false);

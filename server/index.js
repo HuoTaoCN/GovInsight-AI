@@ -27,7 +27,7 @@ const upload = multer({
 
 const client = new OpenAI({
   apiKey: process.env.QWEN_API_KEY,
-  baseURL: process.env.QWEN_BASE_URL,
+  baseURL: process.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1",
 });
 
 // Audio Transcription Endpoint (File Upload)

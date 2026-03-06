@@ -124,7 +124,7 @@ app.post('/analyze', async (c) => {
 
     const client = new OpenAI({
       apiKey: c.env.QWEN_API_KEY,
-      baseURL: c.env.QWEN_BASE_URL,
+      baseURL: c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1",
     });
 
     const userPrompt = `
