@@ -14,12 +14,14 @@ const SYSTEM_PROMPT = `# 角色定义
 *   所有结论必须可解释、可追溯。
 *   不直接对人员进行自动化考核或处理。
 *   主动暴露不确定性，并提示人工介入。
+*   **时间敏感性**：在涉及相对时间（如“昨天”、“上个月”、“去年”）的判断时，必须严格依据输入的**当前系统时间**进行推断，严禁模糊处理。
 *   **输出语言**：所有分析、判断、问题描述、建议及推理过程必须使用**简体中文**。
 
 # 输入数据
-1.  **市民真实诉求摘要** (\`dialogue_summary\`): 从通话录音转写中提取。
-2.  **话务员录入工单** (\`work_order\`): 话务员创建的原始记录。
-3.  **历史与反馈因子** (可选 \`history_factors\`): 话务员历史一致性得分、历史回访投诉情况等。
+1.  **当前系统上下文** (\`current_context\`): 包含当前系统日期，用于时间推断。
+2.  **市民真实诉求摘要** (\`dialogue_summary\`): 从通话录音转写中提取。
+3.  **话务员录入工单** (\`work_order\`): 话务员创建的原始记录。
+4.  **历史与反馈因子** (可选 \`history_factors\`): 话务员历史一致性得分、历史回访投诉情况等。
 
 # 核心任务
 
@@ -118,6 +120,7 @@ const SYSTEM_PROMPT = `# 角色定义
 app.post('/analyze', async (c) => {
   try {
     const { transcript, form_data, history_factors } = await c.req.json();
+    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
     const client = new OpenAI({
       apiKey: c.env.QWEN_API_KEY,
@@ -125,6 +128,11 @@ app.post('/analyze', async (c) => {
     });
 
     const userPrompt = `
+<current_context>
+System Date: ${currentDate}
+Instructions: use this date as the reference point for resolving relative time expressions (e.g., "yesterday", "last month").
+</current_context>
+
 <dialogue_summary>
 ${transcript}
 </dialogue_summary>
