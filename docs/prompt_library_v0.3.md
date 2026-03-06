@@ -154,7 +154,7 @@ ${JSON.stringify(history_factors || {})}
 
 ## 3. 模型参数配置
 
-*   **Model**: `qwen3.5-plus-2026-02-23`
+*   **Model**: `qwen3.5-plus`
     *   选择理由：该模型在长文本理解、指令遵循（Instruction Following）和 JSON 输出稳定性方面表现优异，且具有较高的性价比。
 *   **Temperature**: `0.1`
     *   选择理由：极低的温度值用于抑制幻觉，确保输出的确定性和稳定性。质检任务需要的是客观、一致的评判，而非发散性的创意。
