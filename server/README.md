@@ -7,7 +7,7 @@
 *   **Runtime**: Node.js
 *   **Web Framework**: Express
 *   **AI SDK**: OpenAI Node.js SDK (Compatible with Qwen/DashScope)
-*   **Model**: qwen-plus-2025-12-01
+*   **Model**: qwen3.5-plus-2026-02-23
 
 ## API 接口
 
@@ -41,7 +41,7 @@
 ```env
 QWEN_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-QWEN_MODEL_NAME=qwen-plus-2025-12-01
+QWEN_MODEL_NAME=qwen3.5-plus-2026-02-23
 ```
 
 ## AI 质检逻辑 (System Prompt)

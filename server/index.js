@@ -285,7 +285,7 @@ ${JSON.stringify(history_factors || {})}
     `;
 
     const completion = await client.chat.completions.create({
-      model: process.env.QWEN_MODEL_NAME || "qwen-plus-2025-12-01", 
+      model: process.env.QWEN_MODEL_NAME || "qwen3.5-plus-2026-02-23", 
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }
