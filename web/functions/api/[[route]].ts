@@ -284,7 +284,7 @@ app.post('/audio/stream', async (c) => {
             "Authorization": `Bearer ${c.env.QWEN_API_KEY}`,
             "Content-Type": "application/octet-stream",
             "X-DashScope-Data-Type": "audio",
-            "X-DashScope-Asr-Model": c.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-2025-09-08",
+            "X-DashScope-Asr-Model": c.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-realtime-2026-02-10",
             "X-DashScope-Asr-Format": "wav", // Assuming frontend sends wav/webm, DashScope usually auto-detects or defaults to pcm/wav
             "X-DashScope-Asr-Sample-Rate": "16000"
         },

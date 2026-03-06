@@ -112,7 +112,7 @@ app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
     try {
         const transcription = await client.audio.transcriptions.create({
           file: fs.createReadStream(filePath),
-          model: process.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-2025-09-08",
+          model: process.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-realtime-2026-02-10",
         });
 
         console.log("Stream result:", transcription.text);
