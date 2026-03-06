@@ -305,7 +305,10 @@ ${JSON.stringify(history_factors || {})}
 
   } catch (error) {
     console.error("Error calling Qwen API:", error);
-    res.status(500).json({ error: "Failed to analyze work order" });
+    res.status(500).json({ 
+      error: error.message || "Failed to analyze work order",
+      details: error.stack || String(error)
+    });
   }
 });
 

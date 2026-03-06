@@ -122,6 +122,13 @@ app.post('/analyze', async (c) => {
     const { transcript, form_data, history_factors } = await c.req.json();
     const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
+    // Debug logging for env variables (masking key)
+    const apiKey = c.env.QWEN_API_KEY || "";
+    console.log(`[Analyze] Model: ${c.env.QWEN_MODEL_NAME || "default"}, BaseURL: ${c.env.QWEN_BASE_URL || "default"}, APIKey set: ${apiKey.length > 0}`);
+    if (apiKey.length > 0) {
+      console.log(`[Analyze] APIKey prefix: ${apiKey.substring(0, 6)}...`);
+    }
+
     const client = new OpenAI({
       apiKey: c.env.QWEN_API_KEY,
       baseURL: c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -171,9 +178,12 @@ ${JSON.stringify(history_factors || {})}
 
     return c.json(result);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error calling Qwen API:", error);
-    return c.json({ error: "Failed to analyze work order" }, 500);
+    return c.json({ 
+      error: error.message || "Failed to analyze work order",
+      details: error.stack || String(error)
+    }, 500);
   }
 });
 
