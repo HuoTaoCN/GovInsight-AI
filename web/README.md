@@ -1,6 +1,6 @@
-# GovInsight-AI 前端 (Web)
+# GovInsight-AI 前端 (GI-WQI Web)
 
-基于 React + Vite 构建的现代化工单质检界面。提供工单编辑、录音转写比对、AI 质检报告展示及修正建议对比功能。
+基于 React + Vite 构建的现代化工单质检界面 (GI-WQI: GovInsight-AI Workorder Quality Inspection)。提供工单编辑、录音转写比对、AI 质检报告展示及修正建议对比功能。
 
 ## 技术栈
 

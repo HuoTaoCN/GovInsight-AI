@@ -1,5 +1,6 @@
 {
-  "name": "server",
+  "name": "gi-wqi-server",
+  "description": "GovInsight-AI Workorder Quality Inspection (GI-WQI) Backend Server",
   "version": "0.4.0",
   "main": "index.js",
   "scripts": {

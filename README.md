@@ -1,8 +1,7 @@
 <div align="center">
-
-# GovInsight-AI 热线工单质量智能检测系统
-
-**Intelligent Quality Inspection System for Government Service Hotline Work Orders**
+  <img src="web/public/logo.svg" width="120" height="120" alt="GovInsight-AI Logo">
+  <h1>GovInsight-AI 热线工单质量智能检测系统 (GI-WQI)</h1>
+  <p><b>Intelligent Quality Inspection System for Government Service Hotline Work Orders</b></p>
 
 [![Version](https://img.shields.io/badge/Version-V0.4.0-orange?style=flat-square)](CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
