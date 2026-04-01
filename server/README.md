@@ -1,6 +1,6 @@
-# GovInsight-AI 后端 (GI-WQI Server)
+# GovInsight-AI 后端 (GI Server)
 
-基于 Node.js 和 Express 构建的轻量级 AI 分析服务 (GI-WQI: GovInsight-AI Workorder Quality Inspection)。负责接收前端请求，组装 Prompt，调用大模型（Qwen）进行推理，并返回结构化的质检报告。
+基于 Node.js 和 Express 构建的轻量级 AI 分析服务 (GI: Government Intelligent Hotline Quality Inspection System)。负责接收前端请求，组装 Prompt，调用大模型（Qwen）进行推理，并返回结构化的质检报告。
 
 ## 技术栈
 

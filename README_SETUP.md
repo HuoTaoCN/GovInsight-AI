@@ -1,6 +1,6 @@
-# GI-WQI: GovInsight-AI Setup Guide
+# GI: GovInsight-AI Setup Guide
 
-This project consists of a Node.js backend (`server`) and a React frontend (`web`) for the GovInsight-AI Workorder Quality Inspection (GI-WQI) system.
+This project consists of a Node.js backend (`server`) and a React frontend (`web`) for the Government Intelligent Hotline Quality Inspection System (GI).
 
 ## Prerequisites
 

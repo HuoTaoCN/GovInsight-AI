@@ -1,6 +1,6 @@
 {
-  "name": "gi-wqi-web",
-  "description": "GovInsight-AI Workorder Quality Inspection (GI-WQI) Web Client",
+  "name": "govinsight-ai-web",
+  "description": "Government Intelligent Hotline Quality Inspection System (GI) Web Client",
   "private": true,
   "version": "0.4.0",
   "license": "GPL-3.0",

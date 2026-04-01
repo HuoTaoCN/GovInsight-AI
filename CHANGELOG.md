@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [V0.4.1] - 2026-03-27
 
 ### 🚀 Branding & UX (品牌与体验)
-- **New English Abbreviation**: 正式引入英文简称 **GI-WQI** (GovInsight-AI Workorder Quality Inspection)。
+- **New Abbreviation**: 正式引入简称 **GI** (Government Intelligent)。
 - **Mobile UI Optimization**: 
-  - 完善了手机端的名称显示，确保移动端能清晰看到品牌与简称。
+  - 完善了手机端的名称显示，确保移动端能清晰看到品牌。
   - 优化了移动端 Header 布局，在小屏幕下自动切换为精简模式。
-- **Project Identity**: 更新了 `package.json`、`README.md` 及 HTML 标题，统一项目身份标识。
+- **Project Identity**: 更新了 `package.json`、`README.md` 及 HTML 标题，统一项目身份标识为“热线工单质量智能检测系统（GI）”。
 
 ## [V0.4.0] - 2026-01-20
 
