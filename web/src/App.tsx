@@ -182,7 +182,7 @@ function App() {
             <div>
               <h1 className="text-xl font-bold tracking-tight hidden md:block">GovInsight-AI 热线工单质量智能检测系统 <span className="text-xs font-normal text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded ml-2 uppercase">GI-WQI</span></h1>
               <h1 className="text-lg font-bold tracking-tight md:hidden">GI-WQI 智能质检</h1>
-              <p className="text-xs text-slate-400 hidden md:block">GovInsight-AI Workorder Quality Inspection System</p>
+              <p className="text-xs text-slate-400 hidden md:block">Government Intelligent Hotline Quality Inspection System</p>
             </div>
           </div>
           <button
