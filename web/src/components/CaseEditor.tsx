@@ -43,7 +43,7 @@ export const CaseEditor: React.FC<CaseEditorProps> = ({ input, onChange }) => {
       {/* Title Header - Fixed */}
       <div className="flex items-center gap-2 shrink-0">
         <Edit3 size={18} className="text-gray-600" />
-        <h2 className="text-lg font-bold text-gray-800">1. 手动录入测试</h2>
+        <h2 className="text-lg font-bold text-gray-800">1. 手动录入</h2>
       </div>
 
       {/* Scrollable Content Area */}

@@ -180,7 +180,7 @@ function App() {
           <div className="flex items-center gap-3">
             <Logo className="text-blue-400" />
             <div>
-              <h1 className="text-xl font-bold tracking-tight hidden md:block">GovInsight-AI GI 热线工单质量智能检测系统</h1>
+              <h1 className="text-xl font-bold tracking-tight hidden md:block">GovInsight-AI GI 热线工单质量智能检测系统 <span className="text-xs font-normal text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded ml-2 uppercase">V0.4.0</span></h1>
               <h1 className="text-lg font-bold tracking-tight md:hidden">GI 智能质检</h1>
               <p className="text-xs text-slate-400 hidden md:block">Government Intelligent Hotline Quality Inspection System</p>
             </div>
@@ -244,7 +244,7 @@ function App() {
               <div className="bg-white p-1.5 rounded-full border shadow-sm group-hover:scale-110 transition-transform shrink-0">
                 <Edit3 size={14} />
               </div>
-              <div className="font-bold truncate">手动录入测试</div>
+              <div className="font-bold truncate">手动录入</div>
             </button>
           </div>
         </div>
