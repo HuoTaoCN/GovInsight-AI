@@ -9,7 +9,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-43853D?style=flat-square&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-v7-646CFF?style=flat-square&logo=vite&logoColor=white)
-![LLM](https://img.shields.io/badge/LLM-Qwen--3.5--Plus-blueviolet?style=flat-square)
+![LLM](https://img.shields.io/badge/LLM-Qwen--3.6--Flash-blueviolet?style=flat-square)
 
 [简体中文](#简体中文) | [English](#english-introduction)
 
@@ -122,7 +122,7 @@ GovInsight-AI 不仅仅是一个打分工具，更是一个**智能辅助助手*
 graph TD
     User["用户 / 质检员"] -->|交互| Web["前端 (React + Vite)"]
     Web -->|"HTTP POST"| Server["后端 (Express)"]
-    Server -->|"组装 Prompt"| LLM["Qwen3.5-Plus (大模型)"]
+    Server -->|"组装 Prompt"| LLM["Qwen3.6-Flash (大模型)"]
     LLM -->|"返回 JSON"| Server
     Server -->|"解析结果"| Web
     Web -->|"可视化报告"| User
@@ -132,7 +132,7 @@ graph TD
 
 *   **前端**: React 19, TypeScript, Tailwind CSS 4, Lucide Icons, Vite 7
 *   **后端**: Node.js, Express, OpenAI SDK (Adapter)
-*   **AI 模型**: Qwen3.5-Plus (via Aliyun DashScope)
+*   **AI 模型**: Qwen3.6-Flash (via Aliyun DashScope)
 *   **提示词工程**: 5层分层推理逻辑 (评分 -> 置信度 -> 策略 -> 校准 -> 修正)
 
 ## 🚀 快速开始
@@ -190,7 +190,7 @@ npm run dev
     登录 Cloudflare Dashboard，进入你的 Pages 项目设置 -> **Environment variables**，添加以下变量：
     *   `QWEN_API_KEY`: 你的阿里云 API Key
     *   `QWEN_BASE_URL`: `https://dashscope.aliyuncs.com/compatible-mode/v1`
-    *   `QWEN_MODEL_NAME`: `qwen3.5-plus`
+    *   `QWEN_MODEL_NAME`: `qwen3.6-flash`
 
 3.  **本地预览 (推荐)**：
     在 `web` 目录下运行以下命令，即可同时启动前端和后端：
@@ -252,7 +252,7 @@ npm run dev
 <a name="english-introduction"></a>
 ## English Introduction
 
-**GovInsight-AI** is an open-source intelligent quality inspection system powered by **Large Language Models (LLM)** (specifically Qwen3.5-Plus). It addresses the critical challenge of verification between "Call Transcripts" and "Operator Work Orders" in government service hotlines (e.g., 12345).
+**GovInsight-AI** is an open-source intelligent quality inspection system powered by **Large Language Models (LLM)** (specifically Qwen3.6-Flash). It addresses the critical challenge of verification between "Call Transcripts" and "Operator Work Orders" in government service hotlines (e.g., 12345).
 
 Traditional manual inspection is inefficient, inconsistent, and often fails to detect subtle semantic tampering. GovInsight-AI solves this by automatically comparing audio transcripts with work order records, accurately identifying missing key information, semantic deviations, and risk downgrading, while providing intelligent revision suggestions.
 
