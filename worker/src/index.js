@@ -115,6 +115,46 @@ const SYSTEM_PROMPT = `# 角色定义
 }
 `;
 
+const CONSULTATION_PROMPT = `# 角色定义
+你是一名为 12345 政务服务热线服务的咨询问答整理助手。你的任务是根据通话转写和工单信息，提炼群众真正想问的问题，并生成群众容易理解的参考答复。
+
+# 工作要求
+* 仅基于输入内容进行总结，不得编造政策条款、办理条件或数字。
+* 输出语言必须为简体中文，表达要自然、口语化、让普通群众容易听懂。
+* 可以使用"一般来说"、"通常需要"、"您可以先"这类群众易懂表达，但不能装作已经核实当地最新政策。
+* 如果信息不足，必须明确提示"建议以当地最新政策或承办部门答复为准"。
+* 请先总结本次咨询，再归纳这类问题背后的共性主题，最后生成若干个群众最可能继续追问的相似问题及参考答案。
+* 输出必须是一个有效的 JSON 对象，不要包裹 Markdown，不要输出额外说明。
+
+# 输出格式
+{
+  "consultation_summary": {
+    "user_question": "字符串，群众这次最核心的咨询问题",
+    "reference_answer": "字符串，针对本次问题的口语化参考答复"
+  },
+  "common_issue_summary": {
+    "theme": "字符串，共性主题名称",
+    "summary": "字符串，这类咨询通常集中关心的共性问题"
+  },
+  "related_questions": [
+    {
+      "question": "字符串，相似问题",
+      "reference_answer": "字符串，对应参考答案",
+      "category": "字符串，可选，问题类别标签"
+    }
+  ],
+  "disclaimer": "字符串，提醒内容"
+}
+`;
+
+const parseJsonContent = (content) => {
+  if (!content) {
+    throw new Error("No content received from LLM");
+  }
+
+  return JSON.parse(content.replace(/```json\n?|\n?```/g, '').trim());
+};
+
 app.post('/api/analyze', async (c) => {
   try {
     const { transcript, form_data, history_factors } = await c.req.json();
@@ -154,9 +194,7 @@ ${JSON.stringify(history_factors || {})}
 
     const content = completion.choices[0].message.content;
     console.log("Qwen Raw Output:", content);
-    
-    const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = parseJsonContent(content);
 
     return c.json(result);
 
@@ -164,6 +202,63 @@ ${JSON.stringify(history_factors || {})}
     console.error("Error calling Qwen API:", error);
     return c.json({ 
       error: error.message || "Failed to analyze work order",
+      details: error.stack || String(error)
+    }, 500);
+  }
+});
+
+app.post('/api/consultation/generate', async (c) => {
+  try {
+    const { transcript, form_data = {}, faq_count } = await c.req.json();
+
+    const client = new OpenAI({
+      apiKey: c.env.QWEN_API_KEY,
+      baseURL: c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    });
+
+    const normalizedFaqCount = Math.min(Math.max(Number(faq_count) || 5, 3), 10);
+    const userPrompt = `
+<dialogue_summary>
+${transcript || ''}
+</dialogue_summary>
+
+<work_order>
+Title: ${form_data.title || ''}
+Description: ${form_data.description || ''}
+Citizen: ${form_data.citizen_name || ''}
+Priority: ${form_data.priority || 'Normal'}
+HandlingType: ${form_data.handling_type || 'Dispatch'}
+</work_order>
+
+<generation_config>
+faq_count: ${normalizedFaqCount}
+answer_style: 群众易懂口语化
+</generation_config>
+    `;
+
+    const completion = await client.chat.completions.create({
+      model: c.env.QWEN_MODEL_NAME || "qwen3.6-flash",
+      messages: [
+        { role: "system", content: CONSULTATION_PROMPT },
+        { role: "user", content: userPrompt }
+      ],
+      temperature: 0.3,
+      max_tokens: 4000
+    });
+
+    const result = parseJsonContent(completion.choices[0].message.content);
+
+    if (!Array.isArray(result.related_questions)) {
+      throw new Error("Invalid consultation result: related_questions must be an array");
+    }
+
+    result.related_questions = result.related_questions.slice(0, normalizedFaqCount);
+
+    return c.json(result);
+  } catch (error) {
+    console.error("Error generating consultation Q&A:", error);
+    return c.json({
+      error: error.message || "Failed to generate consultation Q&A",
       details: error.stack || String(error)
     }, 500);
   }

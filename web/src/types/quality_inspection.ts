@@ -95,3 +95,20 @@ export interface WorkOrderInput {
     leader_review_deviation?: boolean;
   };
 }
+
+export interface ConsultationQaResult {
+  consultation_summary: {
+    user_question: string;
+    reference_answer: string;
+  };
+  common_issue_summary: {
+    theme: string;
+    summary: string;
+  };
+  related_questions: Array<{
+    question: string;
+    reference_answer: string;
+    category?: string;
+  }>;
+  disclaimer: string;
+}
