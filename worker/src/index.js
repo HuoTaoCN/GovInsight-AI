@@ -116,12 +116,12 @@ const SYSTEM_PROMPT = `# 角色定义
 `;
 
 const CONSULTATION_PROMPT = `# 角色定义
-你是一名为 12345 政务服务热线服务的咨询问答整理助手。你的任务是根据通话转写和工单信息，提炼群众真正想问的问题，并生成群众容易理解的参考答复。
+你是一名为 12345 政务服务热线服务的咨询问答整理助手。你的任务是根据通话转写和工单信息，提炼群众真正想问的问题，并按指定风格生成参考答复。
 
 # 工作要求
 * 仅基于输入内容进行总结，不得编造政策条款、办理条件或数字。
-* 输出语言必须为简体中文，表达要自然、口语化、让普通群众容易听懂。
-* 可以使用"一般来说"、"通常需要"、"您可以先"这类群众易懂表达，但不能装作已经核实当地最新政策。
+* 输出语言必须为简体中文，并严格遵循输入里给定的 answer_style 与 style_instruction。
+* 当风格偏口语化时，可以使用"一般来说"、"通常需要"、"您可以先"这类群众易懂表达；当风格偏标准答复或简洁要点式时，也必须保持清晰、准确、克制。
 * 如果信息不足，必须明确提示"建议以当地最新政策或承办部门答复为准"。
 * 请先总结本次咨询，再归纳这类问题背后的共性主题，最后生成若干个群众最可能继续追问的相似问题及参考答案。
 * 输出必须是一个有效的 JSON 对象，不要包裹 Markdown，不要输出额外说明。
@@ -130,7 +130,7 @@ const CONSULTATION_PROMPT = `# 角色定义
 {
   "consultation_summary": {
     "user_question": "字符串，群众这次最核心的咨询问题",
-    "reference_answer": "字符串，针对本次问题的口语化参考答复"
+    "reference_answer": "字符串，针对本次问题的参考答复，风格必须符合输入配置"
   },
   "common_issue_summary": {
     "theme": "字符串，共性主题名称",
@@ -146,6 +146,18 @@ const CONSULTATION_PROMPT = `# 角色定义
   "disclaimer": "字符串，提醒内容"
 }
 `;
+
+const getAnswerStyleInstruction = (answerStyle) => {
+  switch (answerStyle) {
+    case 'service_standard_cn':
+      return '答案风格：偏政务窗口标准答复。表达规范、稳妥、清晰，适合窗口人员或热线坐席直接参考。';
+    case 'concise_cn':
+      return '答案风格：偏简洁要点式。优先用短句和分点说明，突出办理条件、材料、渠道和提醒事项。';
+    case 'plain_easy_cn':
+    default:
+      return '答案风格：偏群众易懂口语化。表达自然、通俗，尽量少用生硬术语，让普通群众一看就明白。';
+  }
+};
 
 const parseJsonContent = (content) => {
   if (!content) {
@@ -209,7 +221,7 @@ ${JSON.stringify(history_factors || {})}
 
 app.post('/api/consultation/generate', async (c) => {
   try {
-    const { transcript, form_data = {}, faq_count } = await c.req.json();
+    const { transcript, form_data = {}, faq_count, answer_style } = await c.req.json();
 
     const client = new OpenAI({
       apiKey: c.env.QWEN_API_KEY,
@@ -217,6 +229,7 @@ app.post('/api/consultation/generate', async (c) => {
     });
 
     const normalizedFaqCount = Math.min(Math.max(Number(faq_count) || 5, 3), 10);
+    const normalizedAnswerStyle = typeof answer_style === 'string' ? answer_style : 'plain_easy_cn';
     const userPrompt = `
 <dialogue_summary>
 ${transcript || ''}
@@ -232,7 +245,8 @@ HandlingType: ${form_data.handling_type || 'Dispatch'}
 
 <generation_config>
 faq_count: ${normalizedFaqCount}
-answer_style: 群众易懂口语化
+answer_style: ${normalizedAnswerStyle}
+style_instruction: ${getAnswerStyleInstruction(normalizedAnswerStyle)}
 </generation_config>
     `;
 

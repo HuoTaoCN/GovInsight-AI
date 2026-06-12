@@ -6,7 +6,7 @@ import { Tooltip } from './components/Tooltip';
 import { Logo } from './components/Logo';
 import { Activity, BrainCircuit, Play, ShieldCheck, UserCheck, CheckCircle, Edit3, HelpCircle, Mail, Github, FileText } from 'lucide-react';
 import { clsx } from 'clsx';
-import type { ConsultationQaResult, EvaluationResult, WorkOrderInput } from './types/quality_inspection';
+import type { AnswerStyle, ConsultationQaResult, EvaluationResult, WorkOrderInput } from './types/quality_inspection';
 
 const CUSTOM_CASE_ID = 'custom-case';
 
@@ -38,6 +38,18 @@ import { RevisionView } from './components/RevisionView';
 
 import { ReadmeModal } from './components/ReadmeModal';
 
+const ANSWER_STYLE_OPTIONS = [
+  { value: 'plain_easy_cn', label: '群众易懂口语化' },
+  { value: 'service_standard_cn', label: '政务窗口标准答复' },
+  { value: 'concise_cn', label: '简洁要点式' },
+] as const;
+
+const ANSWER_STYLE_HELPER_TEXT: Record<AnswerStyle, string> = {
+  plain_easy_cn: '更像热线坐席向群众解释政策，表达自然、通俗。',
+  service_standard_cn: '更适合窗口或坐席直接参考，表达规范、稳妥。',
+  concise_cn: '更强调重点和步骤，适合快速提炼办理要点。',
+};
+
 function App() {
   const [selectedCaseId, setSelectedCaseId] = useState<string>(MOCK_CASES[0].id);
   const [customInput, setCustomInput] = useState<WorkOrderInput>(INITIAL_CUSTOM_INPUT);
@@ -46,6 +58,7 @@ function App() {
   const [showResult, setShowResult] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<EvaluationResult | null>(null);
   const [faqCount, setFaqCount] = useState(5);
+  const [answerStyle, setAnswerStyle] = useState<AnswerStyle>('plain_easy_cn');
   const [isGeneratingConsultation, setIsGeneratingConsultation] = useState(false);
   const [showConsultationResult, setShowConsultationResult] = useState(false);
   const [consultationResult, setConsultationResult] = useState<ConsultationQaResult | null>(null);
@@ -144,6 +157,7 @@ function App() {
           transcript: inputData.transcript,
           form_data: inputData.form_data,
           faq_count: faqCount,
+          answer_style: answerStyle,
       });
       setConsultationResult(result);
       setShowConsultationResult(true);
@@ -623,9 +637,23 @@ function App() {
                       className="w-20 px-2 py-1.5 rounded border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </label>
-                  <div className="text-sm text-gray-600 bg-white border border-purple-200 rounded px-3 py-1.5">
-                    答案风格：群众易懂口语化
-                  </div>
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <span className="font-medium">答案风格</span>
+                    <select
+                      value={answerStyle}
+                      onChange={(e) => setAnswerStyle(e.target.value as AnswerStyle)}
+                      className="min-w-44 px-3 py-1.5 rounded border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      {ANSWER_STYLE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="basis-full text-xs text-purple-700">
+                  当前风格说明：{ANSWER_STYLE_HELPER_TEXT[answerStyle]}
                 </div>
               </div>
             </div>

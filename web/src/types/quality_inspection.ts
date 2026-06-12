@@ -96,6 +96,8 @@ export interface WorkOrderInput {
   };
 }
 
+export type AnswerStyle = 'plain_easy_cn' | 'service_standard_cn' | 'concise_cn';
+
 export interface ConsultationQaResult {
   consultation_summary: {
     user_question: string;
