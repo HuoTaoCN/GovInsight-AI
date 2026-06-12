@@ -75,8 +75,9 @@ function App() {
 
   const postJsonWithRetry = async <T,>(url: string, payload: unknown): Promise<T> => {
     let lastError: unknown;
+    const retryDelays = [800, 2000, 5000];
 
-    for (let attempt = 0; attempt < 2; attempt += 1) {
+    for (let attempt = 0; attempt <= retryDelays.length; attempt += 1) {
       try {
         // #region debug-point A:fetch-start
         fetch('http://127.0.0.1:7777/event', { method: 'POST', body: JSON.stringify({ sessionId: 'consultation-fetch-failure', runId: 'post-fix', hypothesisId: 'A', location: 'web/src/App.tsx:postJsonWithRetry:start', msg: '[DEBUG] fetch start', data: { url, attempt: attempt + 1, answerStyle: typeof payload === 'object' && payload !== null && 'answer_style' in payload ? (payload as { answer_style?: unknown }).answer_style : undefined }, ts: Date.now() }) }).catch(() => {});
@@ -109,11 +110,11 @@ function App() {
         // #endregion
         const isNetworkError = error instanceof TypeError || (error instanceof Error && error.message.includes('Failed to fetch'));
 
-        if (!isNetworkError || attempt === 1) {
+        if (!isNetworkError || attempt === retryDelays.length) {
           throw error;
         }
 
-        await sleep(600);
+        await sleep(retryDelays[attempt]);
       }
     }
 
