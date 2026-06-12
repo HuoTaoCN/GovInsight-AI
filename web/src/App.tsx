@@ -78,6 +78,9 @@ function App() {
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
+        // #region debug-point A:fetch-start
+        fetch('http://127.0.0.1:7777/event', { method: 'POST', body: JSON.stringify({ sessionId: 'consultation-fetch-failure', runId: 'pre-fix', hypothesisId: 'A', location: 'web/src/App.tsx:postJsonWithRetry:start', msg: '[DEBUG] fetch start', data: { url, attempt: attempt + 1, answerStyle: typeof payload === 'object' && payload !== null && 'answer_style' in payload ? (payload as { answer_style?: unknown }).answer_style : undefined }, ts: Date.now() }) }).catch(() => {});
+        // #endregion
         const response = await fetch(url, {
           method: 'POST',
           headers: {
@@ -86,7 +89,14 @@ function App() {
           body: JSON.stringify(payload),
         });
 
+        // #region debug-point B:fetch-response
+        fetch('http://127.0.0.1:7777/event', { method: 'POST', body: JSON.stringify({ sessionId: 'consultation-fetch-failure', runId: 'pre-fix', hypothesisId: 'B', location: 'web/src/App.tsx:postJsonWithRetry:response', msg: '[DEBUG] fetch response', data: { url, attempt: attempt + 1, ok: response.ok, status: response.status, redirected: response.redirected, contentType: response.headers.get('content-type') }, ts: Date.now() }) }).catch(() => {});
+        // #endregion
+
         if (!response.ok) {
+          // #region debug-point C:http-error
+          fetch('http://127.0.0.1:7777/event', { method: 'POST', body: JSON.stringify({ sessionId: 'consultation-fetch-failure', runId: 'pre-fix', hypothesisId: 'C', location: 'web/src/App.tsx:postJsonWithRetry:not-ok', msg: '[DEBUG] fetch non-2xx response', data: { url, attempt: attempt + 1, status: response.status }, ts: Date.now() }) }).catch(() => {});
+          // #endregion
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
@@ -94,6 +104,9 @@ function App() {
         return await response.json();
       } catch (error) {
         lastError = error;
+        // #region debug-point D:fetch-catch
+        fetch('http://127.0.0.1:7777/event', { method: 'POST', body: JSON.stringify({ sessionId: 'consultation-fetch-failure', runId: 'pre-fix', hypothesisId: 'D', location: 'web/src/App.tsx:postJsonWithRetry:catch', msg: '[DEBUG] fetch caught error', data: { url, attempt: attempt + 1, name: error instanceof Error ? error.name : typeof error, message: error instanceof Error ? error.message : String(error) }, ts: Date.now() }) }).catch(() => {});
+        // #endregion
         const isNetworkError = error instanceof TypeError || (error instanceof Error && error.message.includes('Failed to fetch'));
 
         if (!isNetworkError || attempt === 1) {
