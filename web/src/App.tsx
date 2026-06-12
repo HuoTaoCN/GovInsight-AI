@@ -58,6 +58,42 @@ function App() {
     return customInput;
   };
 
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const postJsonWithRetry = async <T,>(url: string, payload: unknown): Promise<T> => {
+    let lastError: unknown;
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        lastError = error;
+        const isNetworkError = error instanceof TypeError || (error instanceof Error && error.message.includes('Failed to fetch'));
+
+        if (!isNetworkError || attempt === 1) {
+          throw error;
+        }
+
+        await sleep(600);
+      }
+    }
+
+    throw lastError instanceof Error ? lastError : new Error('请求失败');
+  };
+
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
     setShowResult(false);
@@ -66,24 +102,11 @@ function App() {
     const inputData = getCurrentInput();
 
     try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const result = await postJsonWithRetry<EvaluationResult>('/api/analyze', {
           transcript: inputData.transcript,
           form_data: inputData.form_data,
           history_factors: inputData.history_factors
-        }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       console.log("API Result:", result); // Debug: Check if suggested_revision exists
       console.log("Suggested Revision:", result.suggested_revision); 
       setAnalysisResult(result);
@@ -117,24 +140,11 @@ function App() {
     setConsultationResult(null);
 
     try {
-      const response = await fetch('/api/consultation/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const result = await postJsonWithRetry<ConsultationQaResult>('/api/consultation/generate', {
           transcript: inputData.transcript,
           form_data: inputData.form_data,
           faq_count: faqCount,
-        }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       setConsultationResult(result);
       setShowConsultationResult(true);
     } catch (error) {
