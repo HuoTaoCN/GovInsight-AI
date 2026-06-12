@@ -194,11 +194,8 @@ const createChatCompletionViaFetch = async ({ apiKey, baseURL, model, messages, 
 app.post('/api/analyze', async (c) => {
   try {
     const { transcript, form_data, history_factors } = await c.req.json();
-
-    const client = new OpenAI({
-      apiKey: c.env.QWEN_API_KEY,
-      baseURL: c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    });
+    const baseURL = c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
+    const model = c.env.QWEN_MODEL_NAME || "qwen3.6-flash";
 
     const userPrompt = `
 <dialogue_summary>
@@ -218,8 +215,10 @@ ${JSON.stringify(history_factors || {})}
 </history_factors>
     `;
 
-    const completion = await client.chat.completions.create({
-      model: c.env.QWEN_MODEL_NAME || "qwen3.6-flash",
+    const content = await createChatCompletionViaFetch({
+      apiKey: c.env.QWEN_API_KEY,
+      baseURL,
+      model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }
@@ -227,8 +226,6 @@ ${JSON.stringify(history_factors || {})}
       temperature: 0.1,
       max_tokens: 4000
     });
-
-    const content = completion.choices[0].message.content;
     console.log("Qwen Raw Output:", content);
     const result = parseJsonContent(content);
 

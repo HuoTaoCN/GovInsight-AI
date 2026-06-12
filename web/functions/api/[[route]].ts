@@ -213,6 +213,8 @@ app.post('/analyze', async (c) => {
   try {
     const { transcript, form_data, history_factors } = await c.req.json();
     const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const baseURL = c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
+    const model = c.env.QWEN_MODEL_NAME || "qwen3.6-flash";
 
     // Debug logging for env variables (masking key)
     const apiKey = c.env.QWEN_API_KEY || "";
@@ -220,11 +222,6 @@ app.post('/analyze', async (c) => {
     if (apiKey.length > 0) {
       console.log(`[Analyze] APIKey prefix: ${apiKey.substring(0, 6)}...`);
     }
-
-    const client = new OpenAI({
-      apiKey: c.env.QWEN_API_KEY,
-      baseURL: c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    });
 
     const userPrompt = `
 <current_context>
@@ -249,8 +246,10 @@ ${JSON.stringify(history_factors || {})}
 </history_factors>
     `;
 
-    const completion = await client.chat.completions.create({
-      model: c.env.QWEN_MODEL_NAME || "qwen3.6-flash",
+    const content = await createChatCompletionViaFetch({
+      apiKey: c.env.QWEN_API_KEY,
+      baseURL,
+      model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }
@@ -259,7 +258,6 @@ ${JSON.stringify(history_factors || {})}
       max_tokens: 4000
     });
 
-    const content = completion.choices[0].message.content;
     const result = parseJsonContent(content);
 
     return c.json(result);
