@@ -169,6 +169,46 @@ const parseJsonContent = (content: string | null | undefined) => {
   return JSON.parse(content.replace(/```json\n?|\n?```/g, '').trim());
 };
 
+const createChatCompletionViaFetch = async ({
+  apiKey,
+  baseURL,
+  model,
+  messages,
+  temperature,
+  max_tokens,
+}: {
+  apiKey: string;
+  baseURL: string;
+  model: string;
+  messages: Array<{ role: string; content: string }>;
+  temperature: number;
+  max_tokens: number;
+}) => {
+  const response = await fetch(`${baseURL.replace(/\/$/, '')}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature,
+      max_tokens,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Chat completion failed: ${response.status} ${errorText}`);
+  }
+
+  const data = await response.json() as {
+    choices?: Array<{ message?: { content?: string | null } }>;
+  };
+  return data.choices?.[0]?.message?.content ?? null;
+};
+
 app.post('/analyze', async (c) => {
   try {
     const { transcript, form_data, history_factors } = await c.req.json();
@@ -238,11 +278,8 @@ app.post('/consultation/generate', async (c) => {
     const { transcript, form_data = {}, faq_count, answer_style } = await c.req.json();
     const normalizedFaqCount = Math.min(Math.max(Number(faq_count) || 5, 3), 10);
     const normalizedAnswerStyle = typeof answer_style === 'string' ? answer_style : 'plain_easy_cn';
-
-    const client = new OpenAI({
-      apiKey: c.env.QWEN_API_KEY,
-      baseURL: c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    });
+    const baseURL = c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
+    const model = c.env.QWEN_MODEL_NAME || "qwen3.6-flash";
 
     const userPrompt = `
 <dialogue_summary>
@@ -264,8 +301,10 @@ style_instruction: ${getAnswerStyleInstruction(normalizedAnswerStyle)}
 </generation_config>
     `;
 
-    const completion = await client.chat.completions.create({
-      model: c.env.QWEN_MODEL_NAME || "qwen3.6-flash",
+    const content = await createChatCompletionViaFetch({
+      apiKey: c.env.QWEN_API_KEY,
+      baseURL,
+      model,
       messages: [
         { role: "system", content: CONSULTATION_PROMPT },
         { role: "user", content: userPrompt }
@@ -274,7 +313,7 @@ style_instruction: ${getAnswerStyleInstruction(normalizedAnswerStyle)}
       max_tokens: 4000
     });
 
-    const result = parseJsonContent(completion.choices[0].message.content);
+    const result = parseJsonContent(content);
 
     if (!Array.isArray(result.related_questions)) {
       throw new Error("Invalid consultation result: related_questions must be an array");
