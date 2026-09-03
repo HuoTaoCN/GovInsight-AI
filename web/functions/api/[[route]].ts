@@ -214,7 +214,7 @@ app.post('/analyze', async (c) => {
     const { transcript, form_data, history_factors } = await c.req.json();
     const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const baseURL = c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
-    const model = c.env.QWEN_MODEL_NAME || "qwen3.6-flash";
+    const model = c.env.QWEN_MODEL_NAME || "qwen3.8-flash";
 
     // Debug logging for env variables (masking key)
     const apiKey = c.env.QWEN_API_KEY || "";
@@ -277,7 +277,7 @@ app.post('/consultation/generate', async (c) => {
     const normalizedFaqCount = Math.min(Math.max(Number(faq_count) || 5, 3), 10);
     const normalizedAnswerStyle = typeof answer_style === 'string' ? answer_style : 'plain_easy_cn';
     const baseURL = c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
-    const model = c.env.QWEN_MODEL_NAME || "qwen3.6-flash";
+    const model = c.env.QWEN_MODEL_NAME || "qwen3.8-flash";
 
     const userPrompt = `
 <dialogue_summary>
@@ -378,7 +378,7 @@ app.post('/audio/transcribe', async (c) => {
             "Authorization": `Bearer ${c.env.QWEN_API_KEY}`,
             "Content-Type": "application/octet-stream",
             "X-DashScope-Data-Type": "audio",
-            "X-DashScope-Asr-Model": c.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
+            "X-DashScope-Asr-Model": c.env.QWEN_ASR_MODEL || "qwen-audio-3.0-asr-flash-stream",
             "X-DashScope-Asr-Format": "wav", 
             "X-DashScope-Asr-Sample-Rate": "16000"
         },
@@ -436,7 +436,7 @@ app.post('/audio/stream', async (c) => {
             "Authorization": `Bearer ${c.env.QWEN_API_KEY}`,
             "Content-Type": "application/octet-stream",
             "X-DashScope-Data-Type": "audio",
-            "X-DashScope-Asr-Model": c.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-realtime-2026-02-10",
+            "X-DashScope-Asr-Model": c.env.QWEN_REALTIME_MODEL || "paraformer-realtime-8k-v2",
             "X-DashScope-Asr-Format": "wav", // Assuming frontend sends wav/webm, DashScope usually auto-detects or defaults to pcm/wav
             "X-DashScope-Asr-Sample-Rate": "16000"
         },

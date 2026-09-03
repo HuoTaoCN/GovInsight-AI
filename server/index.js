@@ -31,7 +31,7 @@ const client = new OpenAI({
 });
 
 // Audio Transcription Endpoint (File Upload)
-// Uses model: qwen3-asr-flash-filetrans (as requested)
+// Uses the configured ASR model, defaulting to the latest local selection.
 app.post('/api/audio/transcribe', upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
@@ -51,13 +51,12 @@ app.post('/api/audio/transcribe', upload.single('file'), async (req, res) => {
     // Note: DashScope's OpenAI compatible endpoint for audio usually requires a file stream
     // We will try to use the OpenAI SDK first. If it fails with specific model names,
     // we might need to fallback to axios or dashscope SDK.
-    // However, user specified a very specific model name: qwen3-asr-flash-filetrans
     
     console.log(`Transcribing file: ${req.file.originalname} using model: ${process.env.QWEN_ASR_MODEL}`);
 
     const transcription = await client.audio.transcriptions.create({
       file: fs.createReadStream(filePath),
-      model: process.env.QWEN_ASR_MODEL || "qwen3-asr-flash-filetrans",
+      model: process.env.QWEN_ASR_MODEL || "qwen-audio-3.0-asr-flash-stream",
     });
 
     console.log("Transcription result:", transcription.text);
@@ -112,7 +111,7 @@ app.post('/api/audio/stream', upload.single('audio'), async (req, res) => {
     try {
         const transcription = await client.audio.transcriptions.create({
           file: fs.createReadStream(filePath),
-          model: process.env.QWEN_REALTIME_MODEL || "qwen3-asr-flash-realtime-2026-02-10",
+          model: process.env.QWEN_REALTIME_MODEL || "paraformer-realtime-8k-v2",
         });
 
         console.log("Stream result:", transcription.text);
@@ -337,7 +336,7 @@ ${JSON.stringify(history_factors || {})}
     `;
 
     const completion = await client.chat.completions.create({
-      model: process.env.QWEN_MODEL_NAME || "qwen3.6-flash", 
+      model: process.env.QWEN_MODEL_NAME || "qwen3.8-flash",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }
@@ -389,7 +388,7 @@ style_instruction: ${getAnswerStyleInstruction(normalizedAnswerStyle)}
     `;
 
     const completion = await client.chat.completions.create({
-      model: process.env.QWEN_MODEL_NAME || "qwen3.6-flash",
+      model: process.env.QWEN_MODEL_NAME || "qwen3.8-flash",
       messages: [
         { role: "system", content: CONSULTATION_PROMPT },
         { role: "user", content: userPrompt }

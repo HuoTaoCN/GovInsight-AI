@@ -190,7 +190,9 @@ npm run dev
     登录 Cloudflare Dashboard，进入你的 Pages 项目设置 -> **Environment variables**，添加以下变量：
     *   `QWEN_API_KEY`: 你的阿里云 API Key
     *   `QWEN_BASE_URL`: `https://dashscope.aliyuncs.com/compatible-mode/v1`
-    *   `QWEN_MODEL_NAME`: `qwen3.6-flash`
+    *   `QWEN_MODEL_NAME`: `qwen3.8-flash`
+    *   `QWEN_ASR_MODEL`: `qwen-audio-3.0-asr-flash-stream`
+    *   `QWEN_REALTIME_MODEL`: `paraformer-realtime-8k-v2`
 
 3.  **本地预览 (推荐)**：
     在 `web` 目录下运行以下命令，即可同时启动前端和后端：

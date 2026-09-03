@@ -195,7 +195,7 @@ app.post('/api/analyze', async (c) => {
   try {
     const { transcript, form_data, history_factors } = await c.req.json();
     const baseURL = c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
-    const model = c.env.QWEN_MODEL_NAME || "qwen3.6-flash";
+    const model = c.env.QWEN_MODEL_NAME || "qwen3.8-flash";
 
     const userPrompt = `
 <dialogue_summary>
@@ -246,7 +246,7 @@ app.post('/api/consultation/generate', async (c) => {
     const normalizedFaqCount = Math.min(Math.max(Number(faq_count) || 5, 3), 10);
     const normalizedAnswerStyle = typeof answer_style === 'string' ? answer_style : 'plain_easy_cn';
     const baseURL = c.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1";
-    const model = c.env.QWEN_MODEL_NAME || "qwen3.6-flash";
+    const model = c.env.QWEN_MODEL_NAME || "qwen3.8-flash";
     const userPrompt = `
 <dialogue_summary>
 ${transcript || ''}

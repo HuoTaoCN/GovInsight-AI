@@ -7,7 +7,7 @@
 *   **Runtime**: Node.js
 *   **Web Framework**: Express
 *   **AI SDK**: OpenAI Node.js SDK (Compatible with Qwen/DashScope)
-*   **Model**: qwen3.6-flash
+*   **Model**: qwen3.8-flash
 
 ## API 接口
 
@@ -41,7 +41,9 @@
 ```env
 QWEN_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-QWEN_MODEL_NAME=qwen3.6-flash
+QWEN_MODEL_NAME=qwen3.8-flash
+QWEN_ASR_MODEL=qwen-audio-3.0-asr-flash-stream
+QWEN_REALTIME_MODEL=paraformer-realtime-8k-v2
 ```
 
 ## AI 质检逻辑 (System Prompt)
